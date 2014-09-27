@@ -9,11 +9,13 @@
 
 (defn deck [{:keys [name id]} game-ch]
   (dom/div {:class "pack"}
-   (dom/div {:class "word" :on-click (select-deck id game-ch)} name)))
+   (dom/div {:class "inside rotated"})
+   (dom/div {:class "inside"}
+    (dom/div {:class "word" :on-click (select-deck id game-ch)} name))))
 
 (defcomponentk game-init [[:data game-ch decks :as data] owner]
   (render [_]
     (dom/div {:class "chooser"}
-      (dom/div {:class "title"} "Choose package:")
-      (map #(deck % game-ch) decks))))
+      (dom/div {:class "chooser-inner"} (dom/div {:class "title"} "Choose package:")
+        (map #(deck % game-ch) decks)))))
 
