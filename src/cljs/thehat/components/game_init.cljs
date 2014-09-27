@@ -1,6 +1,7 @@
 (ns thehat.components.game-init
   (:require [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponentk]]
+            [thehat.helpers :refer [nbsp]]
             [cljs.core.async :as async :refer [put!]]))
 
 (defn select-deck
@@ -9,7 +10,7 @@
 
 (defn deck [{:keys [name id]} game-ch]
   (dom/div {:class "pack" :on-click (select-deck id game-ch)}
-   (dom/div {:class "inside rotated"} "&nbsp;")
+   (dom/div {:class "inside rotated"} nbsp)
    (dom/div {:class "inside"}
     (dom/div {:class "word"} name))))
 
