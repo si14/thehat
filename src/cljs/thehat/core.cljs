@@ -3,7 +3,6 @@
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
             [thehat.components :refer [game rules not-found]]
-            [figwheel.client :as fw :include-macros true]
             [secretary.core :as secretary :include-macros true :refer [defroute]]
             [cljs.core.async :as async :refer [<! >! chan close! put!]]
             [goog.events :as events]
@@ -16,8 +15,8 @@
 (def route-ch (chan))
 
 ;; TODO: get from server
-(def decks [{:id 1 :name "Deck #1" :words ["hello" "world"]}
-            {:id 2 :name "Deck #2" :words ["why" "guys" "you"]}
+(def decks [{:id 1 :name "All" :words ["hello" "world"]}
+            {:id 2 :name "Animals" :words ["why" "guys" "you"]}
             {:id 3 :name "Shuffle" :words ["so" "long" "and" "longer"]}
             {:id 3 :name "Fourth" :words ["cola" "russian" "bear" "beer"]}
             ])
@@ -39,10 +38,6 @@
     (when component
       (om/build component (merge data args {:route-ch route-ch})))))
 
-(fw/watch-and-reload
- :jsload-callback  (fn []
-                     (reset! app-state @app-state)
-                     (put! route-ch {:component game})))
 
 (defroute "/" []
   (put! route-ch {:component game}))

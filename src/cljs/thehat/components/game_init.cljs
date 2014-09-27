@@ -8,10 +8,10 @@
   #(put! ch {:component :game-process :args {:deck-id id}}))
 
 (defn deck [{:keys [name id]} game-ch]
-  (dom/div {:class "pack"}
+  (dom/div {:class "pack" :on-click (select-deck id game-ch)}
    (dom/div {:class "inside rotated"} "&nbsp;")
    (dom/div {:class "inside"}
-    (dom/div {:class "word" :on-click (select-deck id game-ch)} name))))
+    (dom/div {:class "word"} name))))
 
 (defcomponentk game-init [[:data game-ch decks :as data] owner]
   (render [_]
