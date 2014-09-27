@@ -2,6 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
+            [thehat.components :refer [game new-game]]
             [figwheel.client :as fw :include-macros true]
             [secretary.core :as secretary :include-macros true :refer [defroute]]
             [cljs.core.async :as async :refer [<! >! chan close! put!]]
@@ -21,11 +22,6 @@
     (dom/div
      "Game rules")))
 
-(defcomponent game [data owner]
-  (render [_]
-    (dom/div
-     "Game")))
-
 (defcomponent not-found [data owner]
   (render [_]
     (dom/div
@@ -44,10 +40,14 @@
       (om/build component data))))
 
 (fw/watch-and-reload
- :jsload-callback  (fn  []  (reset! app-state @app-state)))
+ :jsload-callback  (fn [] 
+                     (reset! app-state @app-state) 
+                     (put! route-ch game)))
 
 
 (defroute "/" []
+  (put! route-ch new-game))
+(defroute "/game" []
   (put! route-ch game))
 (defroute "/rules" []
   (put! route-ch rules))
