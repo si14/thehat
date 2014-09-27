@@ -2,13 +2,13 @@
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent defcomponentk]]
+            [thehat.components.game-init :refer [game-init]]
             [secretary.core :as secretary :include-macros true]
             [cljs.core.async :as async :refer [<! >! chan close! put!]]
             [clojure.string :refer [join]])
   (:require-macros [cljs.core.async.macros :refer [go-loop]]))
 
-(declare game-init)
-(defn to-game-init [ch] #(put! ch {:component game-init :args {}}))
+(defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
 (defn get-words [id decks]
   (some #(when (= id (:id %)) (:words %)) decks))
@@ -130,36 +130,26 @@
       (> (count words) 0) (last-word owner s)
       :else (final-score owner s)))))
 
-(defn select-deck
-  [id ch]
-  #(put! ch {:component game-process :args {:deck-id id}}))
-
-(defn deck [{:keys [name id]} game-ch]
-  (dom/div {:class "pack"}
-   (dom/div {:class "word" :on-click (select-deck id game-ch)} name)))
-
-(defcomponentk game-init [[:data game-ch decks :as data] owner]
-  (render [_]
-    (dom/div {:class "chooser"}
-      (dom/div {:class "title"} "Choose package:")
-      (map #(deck % game-ch) decks))))
+(def components {:game-init game-init
+                 :game-process game-process
+                 })
 
 (defcomponent game [data owner]
   (init-state [_]
     {:ch (chan)
-     :component game-init
+     :component :game-init
      :args {}})
   (will-mount [_]
     (let [{:keys [ch]} (om/get-state owner)]
       (go-loop []
-        (let [{:keys [component args]
-               :as c} (<! ch)]
+        (let [c (<! ch)]
           (om/update-state! owner #(merge % c))
           (recur)))))
   (render-state [_ {:keys [component args ch]}]
-    (dom/div
-     (when component
-       (om/build component (merge data args {:game-ch ch}))))))
+    (let [c (component components)] 
+      (dom/div
+        (when c
+          (om/build c (merge data args {:game-ch ch})))))))
 
 (defcomponent rules [data owner]
   (render [_]
