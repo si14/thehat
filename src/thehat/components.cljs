@@ -12,11 +12,6 @@
     (dom/div
      (dom/a {:class "back" :on-click #(secretary/dispatch! "#/")} "back"))))
 
-(defcomponent new-game [data owner]
-  (render [_]
-    (dom/div
-     (dom/a {:class "back" :on-click #(secretary/dispatch! "#/game")} "start"))))
-
 (defcomponent rules [data owner]
   (render [_]
     (dom/div

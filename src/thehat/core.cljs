@@ -2,7 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
-            [thehat.components :refer [game new-game rules not-found]]
+            [thehat.components :refer [game rules not-found]]
             [figwheel.client :as fw :include-macros true]
             [secretary.core :as secretary :include-macros true :refer [defroute]]
             [cljs.core.async :as async :refer [<! >! chan close! put!]]
@@ -34,10 +34,7 @@
                      (reset! app-state @app-state) 
                      (put! route-ch game)))
 
-
 (defroute "/" []
-  (put! route-ch new-game))
-(defroute "/game" []
   (put! route-ch game))
 (defroute "/rules" []
   (put! route-ch rules))
