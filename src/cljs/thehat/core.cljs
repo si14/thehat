@@ -17,8 +17,10 @@
 ;; TODO: get from server
 (def decks [{:id 1 :name "All" :words ["hello" "world"]}
             {:id 2 :name "Animals" :words ["why" "guys" "you"]}
-            {:id 3 :name "Shuffle" :words ["so" "long" "and" "longer"]}
-            {:id 3 :name "Fourth" :words ["cola" "russian" "bear" "beer"]}
+            {:id 3 :name "Temp" :words ["so" "long" "and" "longer"]}
+            {:id 4 :name "Food" :words ["cola" "russian" "bear" "beer"]}
+            {:id 5 :name "Seas" :words ["cola" "russian" "bear" "beer"]}
+            {:id 6 :name "Drinks!" :words ["cola" "russian" "bear" "beer"]}
             ])
 
 (def app-state (atom {:decks decks}))
@@ -51,6 +53,6 @@
   (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
   (doto h (.setEnabled true)))
 
-
-(om/root root app-state
-         {:target (. js/document (getElementById "app"))})
+(defn run []
+  (om/root root app-state
+           {:target (. js/document (getElementById "app"))}))
