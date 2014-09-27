@@ -23,14 +23,20 @@
       -1 "Team 2 won!!!"
       0 "DRAW"))))
 
-(defn in-progress [owner {:keys [team-1 team-2 words current-round time]
+(defn in-progress [owner {:keys [team-1 team-2 words current-round time
+                                 max-time max-words]
                           :as s}]
   (dom/div
    {:class "game"}
    (dom/div
     {:class "time"}
     (dom/div
-     {:class "progress active"} time))
+     {:class "progress active"
+      :style {:width (str
+                      (->> (/ time max-time)
+                           (- 1)
+                           (* 100))
+                      "%")}} time))
 
    (dom/div
     {:class "card-inner card-rotated"} nbsp)
@@ -59,8 +65,16 @@
 
    (dom/div
     {:class "teams"}
-    (dom/div {:class "team1"} team-1)
-    (dom/div {:class "team2"} team-2))))
+    (dom/div {:class "team1"
+              :style {:width (str
+                              (->> (/ team-1 max-words)
+                                   (* 100))
+                              "%")}} team-1)
+    (dom/div {:class "team2"
+              :style {:width (str
+                              (->> (/ team-2 max-words)
+                                   (* 100))
+                              "%")}} team-2))))
 
 (defn last-word [owner {:keys [words team-1 team-2 current-team]}]
   (dom/div
@@ -118,6 +132,7 @@
        (assoc s
          :current-round name
          :time time
+         :max-time time
          :round-seq (rest round-seq)
          :interval (js/setInterval
                     (fn []
@@ -144,6 +159,8 @@
     {:interval nil
      :team-1 0
      :team-2 0
+     :max-time 0
+     :max-words 10
      :round-seq [{:name :team-1
                   :time 3}
                  {:name :pause}
