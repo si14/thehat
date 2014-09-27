@@ -10,6 +10,8 @@ body.portrait {
 
 body.landscape {
 }
+
+
 /* Chooser */
 
 @media (max-width: 750px) {
@@ -31,12 +33,12 @@ body.landscape {
     position: relative;
     width: 100%;
     height: 30%;
-    text-align: center;
+    color: white;
     margin-bottom: 5%;
-    display: table;
   }
 
   .chooser .pack .inside {
+    position: absolute;
     background-color: white;
     border-radius: 2px;
     border: 1px solid #ccc;
@@ -44,7 +46,12 @@ body.landscape {
     display: table;
     width: 100%;
     height: 100%;
-    position: absolute;
+  }
+
+  .chooser .pack .word {
+    font-size: 32px;
+    display: table-cell;
+    vertical-align: middle;
   }
 
   .chooser .pack .inside.rotated {
@@ -52,10 +59,12 @@ body.landscape {
     transform: rotate(4deg);
   }
 
-  .chooser .pack .word {
-    font-size: 32px;
-    display: table-cell;
-    vertical-align: middle;
+  .mobile {
+
+  }
+
+  .desktop {
+    display: none;
   }
 }
 
@@ -71,25 +80,25 @@ body.landscape {
   }
 
   .chooser .title {
-    font-size: 20px;
-    margin-bottom: 20px;
+    display: none;
   }
 
   .chooser .chooser-inner {
+    -webkit-column-count: 2;
+    column-count: 2;
   }
 
   .chooser .pack {
     cursor: pointer;
-    width: 47%;
-    margin: 1.25%;
+    width: 100%;
     height: 140px;
-    float: left;
     display: table;
     text-align: center;
     background-color: white;
     border-radius: 2px;
     border: 1px solid #ccc;
     box-shadow: 0 0 10px #cfcdc6;
+    margin-bottom: 10px;
   }
 
   .chooser .pack .inside {
@@ -97,6 +106,7 @@ body.landscape {
     vertical-align: middle;
     width: 100%;
     text-align: center;
+    color: white;
   }
 
   .chooser .pack .inside.rotated {
@@ -105,6 +115,14 @@ body.landscape {
 
   .chooser .pack .word {
     font-size: 32px;
+  }
+
+  .mobile {
+    display: none;
+  }
+
+  .desktop {
+
   }
 }
 
@@ -211,8 +229,8 @@ body.landscape {
   }
 
   .game .card-rotated {
-    -webkit-transform: rotate(4deg);
-    transform: rotate(4deg);
+    -webkit-transform: translate3d(0,0,0) rotate(4deg);
+    transform: translate3d(0,0,0) rotate(4deg);
   }
 
   .game .time, .game .teams {
@@ -245,7 +263,9 @@ body.landscape {
   }
 
   .game .card-rotated {
-    display: none;
+    position: absolute;
+    -webkit-transform: rotate(4deg);
+    transform: rotate(4deg);
   }
 
   .game .time, .game .teams {
@@ -261,4 +281,31 @@ body.landscape {
     margin-top: 50px;
     margin-bottom: 0px;
   }
+}
+
+
+/* Round finished */
+
+.finished {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  margin-top: -100px;
+  width: 80%;
+  margin-left: 10%;
+  margin-right: 10%;
+  height: 200px;
+  font-size: 32px;
+}
+
+.finished div {
+  margin-bottom: 20px;
+}
+
+.finished div.big {
+  font-size: 300%;
+}
+
+.finished div.small {
+  font-size: 60%;
 }

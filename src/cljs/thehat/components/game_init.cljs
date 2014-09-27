@@ -8,18 +8,21 @@
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
 (defn select-deck
-  [id ch]
+  [id ch name]
   #(do
      (dommy/remove-class! (sel1 (str "#deck_" id)) "flipInX")
      (dommy/add-class! (sel1 (str "#deck_" id)) "bounce")
      (dommy/listen! (sel1 (str "#deck_" id))
                     :webkitAnimationEnd (fn [e] (put! ch {:component :game-process
-                                                          :args {:deck-id id}})))))
+                                                          :args {:deck-id id :name name}})))))
 
 (defn deck [{:keys [name id]} game-ch]
-  (dom/div {:id (str "deck_" id) :class "pack animated flipInX" :on-click (select-deck id game-ch)}
+  (dom/div {:id (str "deck_" id)
+            :class "pack animated flipInX"
+            :on-click (select-deck id game-ch name)}
    (dom/div {:class "inside rotated"} "&nbsp;")
-   (dom/div {:class "inside"}
+   (dom/div {:class "inside"
+            :style {:background-image (.toDataUrl (.generate js/GeoPattern name))}}
     (dom/div {:class "word"} name))))
 
 (defcomponentk game-init [[:data game-ch decks :as data] owner]
