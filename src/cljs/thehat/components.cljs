@@ -4,9 +4,7 @@
             [om-tools.core :refer-macros [defcomponent defcomponentk]]
             [thehat.components.game-init :refer [game-init]]
             [thehat.components.game-process :refer [game-process]]
-            [secretary.core :as secretary :include-macros true]
-            [cljs.core.async :as async :refer [<! >! chan close! put!]]
-            [clojure.string :refer [join]])
+            [cljs.core.async :as async :refer [<! >! chan close! put!]])
   (:require-macros [cljs.core.async.macros :refer [go-loop]]))
 
 (def components {:game-init game-init
