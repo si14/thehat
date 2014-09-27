@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>The Hat</title>
+        <link href="css/normalize.css" rel="stylesheet" type="text/css" />
+        <link href="css/style.css" rel="stylesheet" type="text/css" />
+        <link href="css/iconFont.css" rel="stylesheet" type="text/css" />
+        <link href="css/animate.css" rel="stylesheet" type="text/css" />
+        <link href='http://fonts.googleapis.com/css?family=PT+Sans&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=PT+Sans+Caption&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    </head>
+    <body>
+        <div class="card">
+            <div class="time">
+                <div class="progress">20</div>
+            </div>
+
+            <div class="card-inner card-rotated">
+                <div class="word">
+                </div>
+            </div>
+
+            <div class="card-inner flipInX animated">
+                <div class="word">
+                    Computer
+
+                    <div class="buttons">
+                        <span class="icon-cancel-2 bt-wrong"></span>
+                        <span class="icon-checkmark bt-right"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="teams">
+                <div class="team1">5</div>
+                <div class="team2">10</div>
+            </div>
+        </div>
+
+        <div id="app" style="display: none;"></div>
+
+        <script src="http://fb.me/react-0.11.1.js"></script>
+        <script src="js/compiled/out/goog/base.js" type="text/javascript"></script>
+        <script src="js/compiled/thehat.js" type="text/javascript"></script>
+        <script type="text/javascript">goog.require("thehat.core");</script>
+    </body>
+</html>
