@@ -1,0 +1,2 @@
+[web]
+production ansible_ssh_host=178.22.70.15
