@@ -10,7 +10,7 @@
 (defcomponent game [data owner]
   (render [_]
     (dom/div
-     (dom/span (:text data)))))
+     (dom/span (str "Decks count: " (count (:decks data)))))))
 
 (defcomponent rules [data owner]
   (render [_]

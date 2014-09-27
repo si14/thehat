@@ -39,7 +39,7 @@
 (fw/watch-and-reload
  :jsload-callback  (fn []
                      (reset! app-state @app-state)
-                     (put! route-ch game)))
+                     (put! route-ch {:component game})))
 
 (defroute "/" []
   (put! route-ch {:component game}))
