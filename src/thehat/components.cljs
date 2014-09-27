@@ -7,24 +7,34 @@
             [clojure.string :refer [join]])
   (:require-macros [cljs.core.async.macros :refer [go-loop]]))
 
-(defcomponent deck [data owner]
-  (render [_]
-    (dom/div {:class "deck" :data-deck-id (:id data)} (:name data))))
+(declare game-init)
+(defn to-game-init [ch] #(put! ch {:component game-init :args {}}))
 
-(defcomponent game-process [{:keys [words]
+(defcomponent game-process [{:keys [words game-ch]
                              :as data} owner]
   (render [_]
+    (println data)
     (dom/div
+     (dom/h2 {:on-click (to-game-init game-ch)} "back")
      (dom/span (str "words count: " (count words)))
      (dom/span (join ", " words)))))
 
-(defcomponent game-init [{:keys [game-ch]
-                          :as data} owner]
+(defn select-deck
+  [words ch]
+  #(put! ch {:component game-process :args {:words words :game-ch ch}}))
+
+(defcomponent deck [{:keys [name game-ch words]}]
   (render [_]
-    (dom/a {:class "back" :on-click #(secretary/dispatch! "#/")} "back")
-    (dom/button {:on-click #(put! game-ch {:component game-process
-                                           :args {:words ["HELLO" "WORLD"]}})}
-                "start")))
+    (dom/h1 {:class "deck"
+             :on-click (select-deck words game-ch)}
+             name
+             )))
+
+(defcomponent game-init [{:keys [game-ch decks] :as data} owner]
+  (render [_]
+    (dom/div 
+      (dom/h3 (str "Select one of " (count decks) " decks:"))
+      (map #(om/build deck (assoc % :game-ch game-ch)) decks))))
 
 (defcomponent game [data owner]
   (init-state [_]
