@@ -18,7 +18,7 @@
 ;; TODO: get from server
 (def decks [{:id 1 :name "Deck #1" :words ["hello" "world"]}
             {:id 2 :name "Deck #2" :words ["why" "guys" "you"]}
-            {:id 3 :name "Shuffle" :words ["so" "long" "and"]}
+            {:id 3 :name "Shuffle" :words ["so" "long" "and" "longer"]}
             ])
 
 (def app-state (atom {:decks decks}))
