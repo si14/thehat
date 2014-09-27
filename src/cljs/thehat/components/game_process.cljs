@@ -2,6 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponentk]]
+            [thehat.helpers :refer [nbsp]]
             [cljs.core.async :as async :refer [put!]]))
 
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
@@ -38,7 +39,7 @@
                       "%")}} time))
 
    (dom/div
-    {:class "card-inner card-rotated"} "")
+    {:class "card-inner card-rotated"} nbsp)
 
    (dom/div
     {:class "card-inner flipInX animated"}
