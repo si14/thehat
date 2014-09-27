@@ -2,9 +2,49 @@ body {
   background-color: #f5f2eb;
   font-size: 14px;
   font-family: 'PT Sans', sans-serif;
+  text-align: center;
 }
 
-.card-inner {
+/* Chooser */
+
+.chooser .title {
+  font-size: 20px;
+  margin-bottom: 10%;
+}
+
+.chooser .pack {
+  background-color: white;
+  border-radius: 2px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px #cfcdc6;
+  display: table;
+}
+
+.chooser .pack .word {
+  font-size: 32px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+@media (max-width: 800px) {
+  .chooser {
+    margin: 10%;
+  }
+
+  .chooser .pack {
+    position: relative;
+    width: 100%;
+    height: 30%;
+    text-align: center;
+    margin-bottom: 10%;
+    display: table;
+  }
+}
+
+
+/* Game */
+
+.game .card-inner {
   background-color: white;
   border-radius: 2px;
   border: 1px solid #ccc;
@@ -13,31 +53,31 @@ body {
   display: table;
 }
 
-.word {
+.game .word {
   display: table-cell;
   vertical-align: middle;
   padding-top: 70px;
 }
 
-.word .buttons {
+.game .word .buttons {
   margin-top: 90px;
 }
 
-.word .buttons .bt-wrong {
+.game .word .buttons .bt-wrong {
   background-color: #fc8d62;
   color: white;
   padding: 15px;
   border-radius: 2px;
 }
 
-.word .buttons .bt-right {
+.game .word .buttons .bt-right {
   background-color: #66c2a5;
   color: white;
   padding: 15px;
   border-radius: 2px;
 }
 
-.teams div, .time .progress {
+.game .teams div, .game .time .progress {
   font-family: 'PT Sans Caption', sans-serif;
   height: 15px;
   color: black;
@@ -46,26 +86,25 @@ body {
   padding-right: 4px;
 }
 
-.time .progress {
+.game .time .progress {
   width: 50%; /* remove me */
   background-color: #66c2a5;
 }
 
-.teams .team1 {
+.game .teams .team1 {
   width: 40%; /* remove me */
   background-color: #8da0cb;
 }
 
-.teams .team2 {
+.game .teams .team2 {
   width: 80%; /* remove me */
   background-color: #a6d854;
 }
 
-/* mobile */
 @media (max-width: 800px) {
-  .card { }
+  .game { }
 
-  .card-inner {
+  .game .card-inner {
     left: 10%;
     top: 15%;
     position: absolute;
@@ -76,35 +115,33 @@ body {
     max-height: 650px;
   }
 
-  .card-rotated {
+  .game .card-rotated {
     -webkit-transform: rotate(4deg);
     transform: rotate(4deg);
   }
 
-  .time, .teams {
+  .game .time, .game .teams {
     position: absolute;
     width: 100%;
     height: 15px;
     text-align: center;
   }
 
-  .teams {
+  .game .teams {
     position: absolute;
     height: 30px;
     bottom: 0px;
   }
 }
 
-
-/* desktop */
 @media (min-width: 800px) {
-  .card {
+  .game {
     left: 50%;
     top: 20%;
     position: absolute;
   }
 
-  .card-inner {
+  .game .card-inner {
     width: 500px;
     height: 100%;
     margin-left: -250px;
@@ -114,11 +151,11 @@ body {
     max-height: 500px;
   }
 
-  .card-rotated {
+  .game .card-rotated {
     display: none;
   }
 
-  .time, .teams {
+  .game .time, .game .teams {
     width: 500px;
     height: 15px;
     margin-bottom: 50px;
@@ -128,7 +165,7 @@ body {
     max-width: 500px;
   }
 
-  .teams {
+  .game .teams {
     margin-top: 50px;
     margin-bottom: 0px;
     height: 30px;
