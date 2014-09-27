@@ -1,7 +1,7 @@
 (ns thehat.components
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
-            [om-tools.core :refer-macros [defcomponent]]
+            [om-tools.core :refer-macros [defcomponent defcomponentk]]
             [secretary.core :as secretary :include-macros true]
             [cljs.core.async :as async :refer [<! >! chan close! put!]]
             [clojure.string :refer [join]])
@@ -101,7 +101,7 @@
      ":("))))
 
 
-(defcomponent game-process [{:keys [deck-id decks game-ch] :as data} owner]
+(defcomponentk game-process [[:data deck-id decks game-ch :as data] owner]
   (init-state [_]
     {:interval nil
      :time 10
@@ -137,7 +137,7 @@
 (defn deck [{:keys [name id]} game-ch]
   (dom/h1 {:class "deck" :on-click (select-deck id game-ch)} name))
 
-(defcomponent game-init [{:keys [game-ch decks] :as data} owner]
+(defcomponentk game-init [[:data game-ch decks :as data] owner]
   (render [_]
     (dom/div
       (dom/h3 (str "Select one of " (count decks) " decks:"))
