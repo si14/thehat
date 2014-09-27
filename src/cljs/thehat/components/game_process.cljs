@@ -2,7 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponentk]]
-            [thehat.helpers :refer [nbsp twitter]]
+            [thehat.helpers :as h :refer [nbsp]]
             [cljs.core.async :as async :refer [put!]]))
 
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
@@ -23,7 +23,8 @@
       -1 "Team 2 won!!!"
       0 "DRAW"))
    (dom/h2 "Share result:")
-   twitter
+   h/twitter
+   h/facebook
    ))
 
 (defn in-progress [owner {:keys [team-1 team-2 words current-round time
@@ -174,10 +175,11 @@
      :words (into [] (get-words deck-id decks))})
   (will-mount [_]
     (interval owner))
+  (did-mount [_] (. js/window initFacebook))
   (render-state [_ {:keys [words time current-round interval]
                     :as s}]
     (cond
-     (= true true) (final-score owner s)
+     ;; (= true true) (final-score owner s)
      (= current-round :pause) (pause owner)
      (= (count words) 0) (do
                            (clear-interval owner)

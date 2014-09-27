@@ -13,3 +13,12 @@
           :data-size="large" 
           :data-url="http://playthehat.com"} 
          "Tweet #thehat"))
+(def facebook
+  (dom/div {:class "fb-like"
+          :data-href "http://playthehat.com"
+          :data-layout "button_count"
+          :data-action "like"
+          :data-show-faces "true"
+          :data-share "false"
+          }))
+
