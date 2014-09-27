@@ -135,12 +135,13 @@
   #(put! ch {:component game-process :args {:deck-id id}}))
 
 (defn deck [{:keys [name id]} game-ch]
-  (dom/h1 {:class "deck" :on-click (select-deck id game-ch)} name))
+  (dom/div {:class "pack"}
+   (dom/div {:class "word" :on-click (select-deck id game-ch)} name)))
 
 (defcomponentk game-init [[:data game-ch decks :as data] owner]
   (render [_]
-    (dom/div
-      (dom/h3 (str "Select one of " (count decks) " decks:"))
+    (dom/div {:class "chooser"}
+      (dom/div {:class "title"} "Choose package:")
       (map #(deck % game-ch) decks))))
 
 (defcomponent game [data owner]
