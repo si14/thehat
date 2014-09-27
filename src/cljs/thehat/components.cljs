@@ -23,10 +23,9 @@
           (om/update-state! owner #(merge % c))
           (recur)))))
   (render-state [_ {:keys [component args ch]}]
-    (let [c (component components)] 
-      (dom/div
-        (when c
-          (om/build c (merge data args {:game-ch ch})))))))
+    (let [c (component components)]
+      (when c
+        (om/build c (merge data args {:game-ch ch}))))))
 
 (defcomponent rules [data owner]
   (render [_]
