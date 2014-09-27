@@ -15,7 +15,11 @@
 (secretary/set-config! :prefix "#")
 (def route-ch (chan))
 
-(def app-state (atom {:text "Hello world!"}))
+;; TODO: get from server
+(def decks [{:name "Deck #1" :id 1}
+            {:name "Deck #2" :id 2}])
+
+(def app-state (atom {:decks decks}))
 
 (defcomponent root [data owner]
   (init-state [_]
@@ -35,7 +39,7 @@
 (fw/watch-and-reload
  :jsload-callback  (fn []
                      (reset! app-state @app-state)
-                     (put! route-ch game)))
+                     (put! route-ch {:component game})))
 
 (defroute "/" []
   (put! route-ch {:component game}))

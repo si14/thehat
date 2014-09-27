@@ -7,18 +7,19 @@
             [clojure.string :refer [join]])
   (:require-macros [cljs.core.async.macros :refer [go-loop]]))
 
-(defcomponent game-process [{:keys [cards]
+(defcomponent game-process [{:keys [decks]
                              :as data} owner]
   (render [_]
     (dom/div
-     (join ", " cards))))
+     (dom/span (str "Decks count: " (count (:decks data))))
+     (dom/span (join ", " decks)))))
 
 (defcomponent game-init [{:keys [game-ch]
                           :as data} owner]
   (render [_]
     (dom/a {:class "back" :on-click #(secretary/dispatch! "#/")} "back")
     (dom/button {:on-click #(put! game-ch {:component game-process
-                                           :args {:cards ["HELLO" "WORLD"]}})}
+                                           :args {:decks ["HELLO" "WORLD"]}})}
                 "start")))
 
 (defcomponent game [data owner]
