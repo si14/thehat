@@ -14,13 +14,13 @@
   :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
             [lein-figwheel "0.1.4-SNAPSHOT"]]
 
-  :source-paths ["src"]
+  :source-paths ["src/clj"]
 
   :figwheel {:css-dirs ["resources/public/css"]}
 
   :cljsbuild {
-    :builds [{:id "thehat"
-              :source-paths ["src"]
+    :builds [{:id "dev"
+              :source-paths ["src/cljs/"]
               :compiler {
                 :output-to "resources/public/js/compiled/thehat.js"
                 :output-dir "resources/public/js/compiled/out"
