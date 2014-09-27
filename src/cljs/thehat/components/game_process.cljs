@@ -42,7 +42,7 @@
     {:class "card-inner card-rotated"} nbsp)
 
    (dom/div
-    {:class "card-inner flipInX animated"}
+    {:class "card-inner card-inner flipInX animated"}
     (dom/div
      {:class "word"}
      (first words)
