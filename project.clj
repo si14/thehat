@@ -21,8 +21,13 @@
   :cljsbuild {
     :builds [{:id "dev"
               :source-paths ["src/cljs/"]
-              :compiler {
-                :output-to "resources/public/js/compiled/thehat.js"
-                :output-dir "resources/public/js/compiled/out"
-                :optimizations :none
-                :source-map true}}]})
+              :compiler {:output-to "resources/public/js/compiled/thehat.js"
+                         :output-dir "resources/public/js/compiled/out"
+                         :optimizations :none
+                         :source-map true}}
+             {:id "release"
+              :source-paths ["src/cljs/"]
+              :compiler {:output-to "resources/public/thehat.js"
+                         :output-dir "resources/public/out_prod"
+                         :optimizations :advanced
+                         :pretty-print false}}]})
