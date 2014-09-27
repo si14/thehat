@@ -26,9 +26,18 @@
       -1 "Team 2 won!!!"
       0 "DRAW"))))
 
-(defn in-progress [owner {:keys [team-1 team-2 words current-team time]
+(defn pause [{:keys [time]}]
+  (dom/div
+   (dom/div (str "PAUSE: " time))
+   (dom/div "Team 2 prepare!")))
+
+(defn in-progress [owner {:keys [team-1 team-2 words current-round time]
                           :as s}]
   (dom/div
+   (dom/div
+    (if (= current-round :team-1)
+      "TEAM 1 turn"
+      "TEAM 2 turn"))
    (dom/div time)
    (dom/div (str "words count: " (count words)))
    (dom/div
@@ -46,8 +55,7 @@
                   (om/update-state!
                    owner
                    #(assoc %
-                      current-team (inc (get s current-team))
-                      :current-team (next-team current-team)
+                      current-round (inc (get s current-round))
                       :words (into [] (drop 1 words)))))}
      "+")
 
@@ -55,8 +63,7 @@
      {:on-click (fn []
                   (om/update-state!
                    owner #(assoc %
-                            current-team (max 0 (dec (get s current-team)))
-                            :current-team (next-team current-team)
+                            current-round (max 0 (dec (get s current-round)))
                             :words (into [] (drop 1 words)))))}
      "-"))))
 
@@ -100,32 +107,62 @@
                       :words [])))}
      ":("))))
 
+(defn clear-interval [owner]
+  (-> (om/get-state owner)
+      (:interval)
+      (js/clearInterval))
+  (om/set-state! owner :interval nil))
+
+(defn interval [owner]
+  (let [round-seq (-> (om/get-state owner)
+                      (:round-seq))
+        {:keys [name time]} (first round-seq)]
+    (println "interval")
+    (om/update-state!
+     owner
+     (fn [s]
+       (assoc s
+         :current-round name
+         :time time
+         :round-seq (rest round-seq)
+         :interval (js/setInterval
+                    (fn []
+                      (let [{:keys [time current-round round-seq]} (om/get-state owner)]
+                        (cond
+                         (> time 1) (om/update-state! owner :time dec)
+                         (= current-round :finish) (clear-interval owner)
+                         :else (do
+                                 (clear-interval owner)
+                                 (interval owner)))))
+                    1000))))))
+
 
 (defcomponentk game-process [[:data deck-id decks game-ch :as data] owner]
   (init-state [_]
     {:interval nil
-     :time 10
      :team-1 0
      :team-2 0
-     :current-team :team-1
+     :round-seq [{:name :team-1
+                  :time 3}
+                 {:name :pause
+                  :time 5}
+                 {:name :team-2
+                  :time 3}
+                 {:name :finish}]
+     :current-round nil
      :words (into [] (get-words deck-id decks))})
   (will-mount [_]
-    (om/set-state!
-     owner
-     :interval
-     (js/setInterval
-      #(let [{:keys [time]} (om/get-state owner)]
-         (if (> time 0)
-           (om/update-state! owner :time dec)
-           (-> (om/get-state owner)
-               (:interval)
-               (js/clearInterval))))
-      1000)))
-  (render-state [_ {:keys [words time]
+    (interval owner))
+  (render-state [_ {:keys [words time current-round interval]
                     :as s}]
     (dom/div
      (dom/h2 {:on-click (to-game-init game-ch)} "back")
      (cond
+      (= current-round :pause) (pause s)
+      (= (count words) 0) (do
+                            (clear-interval owner)
+                            (final-score owner s))
+
       (and (> time 0) (> (count words) 0)) (in-progress owner s)
       (> (count words) 0) (last-word owner s)
       :else (final-score owner s)))))
