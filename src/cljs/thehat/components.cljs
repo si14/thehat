@@ -117,7 +117,6 @@
   (let [round-seq (-> (om/get-state owner)
                       (:round-seq))
         {:keys [name time]} (first round-seq)]
-    (println "interval")
     (om/update-state!
      owner
      (fn [s]
