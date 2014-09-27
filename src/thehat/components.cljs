@@ -11,19 +11,19 @@
   (render [_]
     (dom/div {:class "deck" :data-deck-id (:id data)} (:name data))))
 
-(defcomponent game-process [{:keys [decks]
+(defcomponent game-process [{:keys [words]
                              :as data} owner]
   (render [_]
     (dom/div
-     (dom/span (str "Decks count: " (count (:decks data))))
-     (dom/span (join ", " decks)))))
+     (dom/span (str "words count: " (count words)))
+     (dom/span (join ", " words)))))
 
 (defcomponent game-init [{:keys [game-ch]
                           :as data} owner]
   (render [_]
     (dom/a {:class "back" :on-click #(secretary/dispatch! "#/")} "back")
     (dom/button {:on-click #(put! game-ch {:component game-process
-                                           :args {:decks ["HELLO" "WORLD"]}})}
+                                           :args {:words ["HELLO" "WORLD"]}})}
                 "start")))
 
 (defcomponent game [data owner]
