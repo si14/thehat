@@ -1,6 +1,6 @@
 (defproject thehat "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
-  :url "http://example.com/FIXME"
+  :description "The Hat game for Clojure Cup 2014"
+  :url "https://github.com/clojurecup2014/thehat"
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2356"]
@@ -12,10 +12,10 @@
             [lein-figwheel "0.1.4-SNAPSHOT"]]
 
   :source-paths ["src"]
-  
+
   :figwheel {:css-dirs ["resources/public/css"]}
 
-  :cljsbuild { 
+  :cljsbuild {
     :builds [{:id "thehat"
               :source-paths ["src"]
               :compiler {

@@ -1,3 +1,136 @@
 body {
+  background-color: #f5f2eb;
   font-size: 14px;
+  font-family: 'PT Sans', sans-serif;
+}
+
+.card-inner {
+  background-color: white;
+  border-radius: 2px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px #cfcdc6;
+  font-size: 32px;
+  display: table;
+}
+
+.word {
+  display: table-cell;
+  vertical-align: middle;
+  padding-top: 70px;
+}
+
+.word .buttons {
+  margin-top: 90px;
+}
+
+.word .buttons .bt-wrong {
+  background-color: #fc8d62;
+  color: white;
+  padding: 15px;
+  border-radius: 2px;
+}
+
+.word .buttons .bt-right {
+  background-color: #66c2a5;
+  color: white;
+  padding: 15px;
+  border-radius: 2px;
+}
+
+.teams div, .time .progress {
+  font-family: 'PT Sans Caption', sans-serif;
+  height: 15px;
+  color: black;
+  text-align: right;
+  font-size: 11px;
+  padding-right: 4px;
+}
+
+.time .progress {
+  width: 50%; /* remove me */
+  background-color: #66c2a5;
+}
+
+.teams .team1 {
+  width: 40%; /* remove me */
+  background-color: #8da0cb;
+}
+
+.teams .team2 {
+  width: 80%; /* remove me */
+  background-color: #a6d854;
+}
+
+/* mobile */
+@media (max-width: 800px) {
+  .card { }
+
+  .card-inner {
+    left: 10%;
+    top: 15%;
+    position: absolute;
+    width: 80%;
+    height: 70%;
+    text-align: center;
+    max-width: 650px;
+    max-height: 650px;
+  }
+
+  .card-rotated {
+    -webkit-transform: rotate(4deg);
+    transform: rotate(4deg);
+  }
+
+  .time, .teams {
+    position: absolute;
+    width: 100%;
+    height: 15px;
+    text-align: center;
+  }
+
+  .teams {
+    position: absolute;
+    height: 30px;
+    bottom: 0px;
+  }
+}
+
+
+/* desktop */
+@media (min-width: 800px) {
+  .card {
+    left: 50%;
+    top: 20%;
+    position: absolute;
+  }
+
+  .card-inner {
+    width: 500px;
+    height: 100%;
+    margin-left: -250px;
+    height: 300px;
+    text-align: center;
+    max-width: 500px;
+    max-height: 500px;
+  }
+
+  .card-rotated {
+    display: none;
+  }
+
+  .time, .teams {
+    width: 500px;
+    height: 15px;
+    margin-bottom: 50px;
+    background-color: transparent;
+    margin-left: -250px;
+    text-align: center;
+    max-width: 500px;
+  }
+
+  .teams {
+    margin-top: 50px;
+    margin-bottom: 0px;
+    height: 30px;
+  }
 }
