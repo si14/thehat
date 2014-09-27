@@ -9,7 +9,7 @@
 
 (defn deck [{:keys [name id]} game-ch]
   (dom/div {:class "pack"}
-   (dom/div {:class "inside rotated"})
+   (dom/div {:class "inside rotated"} "&nbsp;")
    (dom/div {:class "inside"}
     (dom/div {:class "word" :on-click (select-deck id game-ch)} name))))
 
