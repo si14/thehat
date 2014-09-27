@@ -5,6 +5,11 @@ body {
   text-align: center;
 }
 
+body.portrait {
+}
+
+body.landscape {
+}
 /* Chooser */
 
 @media (max-width: 750px) {
