@@ -10,10 +10,11 @@
 (declare game-init)
 (defn to-game-init [ch] #(put! ch {:component game-init :args {}}))
 
-(defcomponent game-process [{:keys [words game-ch]
+(defn get-words [id decks]
+  (some #(when (= id (:id %) (:words %))) decks))
+
+(defcomponent game-process [{:keys [deck-id game-ch]
                              :as data} owner]
- 
-     
   (init-state [_]
     {:time 10})
   (will-mount [_]
@@ -34,20 +35,16 @@
 
 (defn select-deck
   [words ch]
-  #(put! ch {:component game-process :args {:words words :game-ch ch}}))
+  #(put! ch {:component game-process :args {:deck-id id}}))
 
-(defcomponent deck [{:keys [name game-ch words]}]
-  (render [_]
-    (dom/h1 {:class "deck"
-             :on-click (select-deck words game-ch)}
-             name
-             )))
+(defn deck [{:keys [name id]} game-ch]
+  (dom/h1 {:class "deck" :on-click (select-deck id game-ch)} name))
 
 (defcomponent game-init [{:keys [game-ch decks] :as data} owner]
   (render [_]
     (dom/div 
       (dom/h3 (str "Select one of " (count decks) " decks:"))
-      (map #(om/build deck (assoc % :game-ch game-ch)) decks))))
+      (map #(deck % game-ch) decks))))
 
 (defcomponent game [data owner]
   (init-state [_]
