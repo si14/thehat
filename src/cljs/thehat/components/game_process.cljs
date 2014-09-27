@@ -25,38 +25,41 @@
 (defn in-progress [owner {:keys [team-1 team-2 words current-round time]
                           :as s}]
   (dom/div
+   {:class "game"}
    (dom/div
-    (if (= current-round :team-1)
-      "TEAM 1 turn"
-      "TEAM 2 turn"))
-   (dom/div time)
-   (dom/div (str "words count: " (count words)))
-   (dom/div
-    (dom/span
-     (str "Teams 1: " team-1))
-    (dom/span
-     (str "Teams 2: " team-2)))
+    {:class "time"}
+    (dom/div
+     {:class "progress active"} time))
 
    (dom/div
-    (dom/span
-     (dom/b (first words)))
+    {:class "card-inner card-rotated"} "&nbsp;")
 
-    (dom/button
-     {:on-click (fn []
-                  (om/update-state!
-                   owner
-                   #(assoc %
-                      current-round (inc (get s current-round))
-                      :words (into [] (drop 1 words)))))}
-     "+")
+   (dom/div
+    {:class "card-inner flipInX animated"}
+    (dom/div
+     {:class "word"}
+     (first words)
 
-    (dom/button
-     {:on-click (fn []
-                  (om/update-state!
-                   owner #(assoc %
-                            current-round (max 0 (dec (get s current-round)))
-                            :words (into [] (drop 1 words)))))}
-     "-"))))
+     (dom/div
+      {:class "buttons"}
+      (dom/span {:class "icon-cancel-2 bt-wrong"
+                 :on-click (fn []
+                             (om/update-state!
+                              owner #(assoc %
+                                       current-round (max 0 (dec (get s current-round)))
+                                       :words (into [] (drop 1 words)))))})
+      (dom/span {:class "icon-checkmark bt-right"
+                 :on-click (fn []
+                             (om/update-state!
+                              owner
+                              #(assoc %
+                                 current-round (inc (get s current-round))
+                                 :words (into [] (drop 1 words)))))}))))
+
+   (dom/div
+    {:class "teams"}
+    (dom/div {:class "team1"} team-1)
+    (dom/div {:class "team2"} team-2))))
 
 (defn last-word [owner {:keys [words team-1 team-2 current-team]}]
   (dom/div
@@ -86,7 +89,7 @@
                   (om/update-state!
                    owner
                    #(assoc %
-                      :team-1 (inc team-2)
+                      :team-2 (inc team-2)
                       :words [])))}
      "team-2")
 
@@ -152,14 +155,12 @@
     (interval owner))
   (render-state [_ {:keys [words time current-round interval]
                     :as s}]
-    (dom/div
-     (dom/h2 {:on-click (to-game-init game-ch)} "back")
-     (cond
-      (= current-round :pause) (pause owner)
-      (= (count words) 0) (do
-                            (clear-interval owner)
-                            (final-score owner s))
+    (cond
+     (= current-round :pause) (pause owner)
+     (= (count words) 0) (do
+                           (clear-interval owner)
+                           (final-score owner s))
 
-      (and (> time 0) (> (count words) 0)) (in-progress owner s)
-      (> (count words) 0) (last-word owner s)
-      :else (final-score owner s)))))
+     (and (> time 0) (> (count words) 0)) (in-progress owner s)
+     (> (count words) 0) (last-word owner s)
+     :else (final-score owner s))))
