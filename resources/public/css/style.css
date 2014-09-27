@@ -135,6 +135,7 @@ body.landscape {
   color: white;
   padding: 15px;
   border-radius: 2px;
+  cursor: pointer;
 }
 
 .game .word .buttons .bt-right {
@@ -142,30 +143,57 @@ body.landscape {
   color: white;
   padding: 15px;
   border-radius: 2px;
+  cursor: pointer;
 }
 
 .game .teams div, .game .time .progress {
   font-family: 'PT Sans Caption', sans-serif;
-  height: 15px;
-  color: black;
+  color: white;
   text-align: right;
-  font-size: 11px;
+  font-size: 13px;
   padding-right: 4px;
 }
 
 .game .time .progress {
   width: 50%; /* remove me */
   background-color: #66c2a5;
+  transition: width 1s;
+  transition-timing-function: linear;
 }
 
-.game .teams .team1 {
-  width: 40%; /* remove me */
+.game .teams .team {
+  clear: both;
+}
+
+.game .teams .team .arrow {
+  width: 5%;
+  float: left;
+  font-size: 10px;
+  padding-top: 4px;
+  color: white;
+  height: 14px;
+}
+
+.game .teams .team .arrow.a1 {
+  background-color: #8192b8;
+}
+
+.game .teams .team .arrow.a2 {
+  background-color: #98c44d;
+}
+
+.game .teams .team .team1 {
+  float: left;
+  width: 0%; /* remove me */
   background-color: #8da0cb;
+  height: 18px;
 }
 
-.game .teams .team2 {
+.game .teams .team .team2 {
+  float: left;
   width: 80%; /* remove me */
   background-color: #a6d854;
+  height: 18px;
 }
 
 @media (max-width: 750px) {
@@ -190,13 +218,11 @@ body.landscape {
   .game .time, .game .teams {
     position: absolute;
     width: 100%;
-    height: 15px;
     text-align: center;
   }
 
   .game .teams {
     position: absolute;
-    height: 30px;
     bottom: 0px;
   }
 }
@@ -224,7 +250,6 @@ body.landscape {
 
   .game .time, .game .teams {
     width: 500px;
-    height: 15px;
     margin-bottom: 50px;
     background-color: transparent;
     margin-left: -250px;
@@ -235,6 +260,5 @@ body.landscape {
   .game .teams {
     margin-top: 50px;
     margin-bottom: 0px;
-    height: 30px;
   }
 }

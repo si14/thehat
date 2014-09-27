@@ -39,7 +39,8 @@
       :style {:width (str
                       (->> (/ time max-time)
                            (- 1)
-                           (* 100))
+                           (* 95)
+                           (+ 5))
                       "%")}} time))
 
    (dom/div
@@ -59,6 +60,7 @@
                               owner #(assoc %
                                        current-round (max 0 (dec (get s current-round)))
                                        :words (into [] (drop 1 words)))))})
+      (dom/span "")
       (dom/span {:class "icon-checkmark bt-right"
                  :on-click (fn []
                              (om/update-state!
@@ -69,16 +71,24 @@
 
    (dom/div
     {:class "teams"}
-    (dom/div {:class "team1"
+    (dom/div
+     {:class "team"}
+     (dom/div {:class "arrow a1"} (dom/span {:class "icon-arrow-right"}))
+     (dom/div {:class "team1"
               :style {:width (str
                               (->> (/ team-1 max-words)
-                                   (* 100))
-                              "%")}} team-1)
-    (dom/div {:class "team2"
+                                   (* 90)
+                                   (+ 5))
+                              "%")}} team-1))
+    (dom/div
+     {:class "team"}
+     (dom/div {:class "arrow a2"} (dom/span {:class "icon-arrow-right"}))
+     (dom/div {:class "team2"
               :style {:width (str
                               (->> (/ team-2 max-words)
-                                   (* 100))
-                              "%")}} team-2))))
+                                   (* 90)
+                                   (+ 5))
+                              "%")}} team-2)))))
 
 (defn last-word [owner {:keys [words team-1 team-2 current-team]}]
   (dom/div
@@ -166,10 +176,10 @@
      :max-time 0
      :max-words 10
      :round-seq [{:name :team-1
-                  :time 3}
+                  :time 30}
                  {:name :pause}
                  {:name :team-2
-                  :time 3}
+                  :time 30}
                  {:name :finish}]
      :current-round nil
      :words (into [] (get-words deck-id decks))})
