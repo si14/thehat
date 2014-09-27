@@ -11,25 +11,68 @@
   (render [_]
     (dom/div {:class "deck" :data-deck-id (:id data)} (:name data))))
 
-(defcomponent game-process [{:keys [words]
-                             :as data} owner]
+(defn next-team [t]
+  (condp = t
+    :team-1 :team-2
+    :team-2 :team-1))
+
+(defcomponent game-process [data owner]
   (init-state [_]
-    {:time 10})
+    (println data)
+    {:interval nil
+     :time 3
+     :team-1 0
+     :team-2 0
+     :current-team :team-1
+     :words (into [] (:words data))})
   (will-mount [_]
-    (let [interval (js/setInterval
-                    #(let [{:keys [time]} (om/get-state owner)]
-                       (if (> time 0)
-                         (om/update-state! owner :time dec)
-                         (js/clearInterval interval)))
-                    1000)]))
-  (render-state [_ {:keys [time]}]
+    (om/set-state!
+     owner
+     :interval
+     (js/setInterval
+      #(let [{:keys [time]} (om/get-state owner)]
+         (if (> time 0)
+           (om/update-state! owner :time dec)
+           (-> (om/get-state owner)
+               (:interval)
+               (js/clearInterval))))
+      1000)))
+  (render-state [_ {:keys [time words current-team team-1 team-2]
+                    :as s}]
     (dom/div
      (if (> time 0)
-       (dom/span time)
-       (dom/span "FINISHED"))
+       (dom/div time)
+       (dom/div "FINISHED"))
 
-     (dom/span (str "words count: " (count words)))
-     (dom/span (join ", " words)))))
+     (dom/div {:class "t"} (str "words count: " (count words)))
+
+     (dom/div
+      (dom/span
+       (str "Teams 1: " team-1))
+      (dom/span
+       (str "Teams 2: " team-2)))
+
+     (dom/div
+      (dom/span
+       (dom/b (first words)))
+
+      (dom/button
+       {:on-click (fn []
+                    (om/update-state!
+                     owner
+                     #(assoc %
+                        current-team (inc (get s current-team))
+                        :current-team (next-team current-team)
+                        :words (into [] (drop 1 words)))))}
+       "+")
+
+      (dom/button
+       {:on-click (fn []
+                    (om/update-state!
+                     owner #(assoc %
+                              :current-team (next-team current-team)
+                              :words (into [] (drop 1 words)))))}
+       "-")))))
 
 (defcomponent game-init [{:keys [game-ch]
                           :as data} owner]
@@ -49,7 +92,7 @@
       (go-loop []
         (let [{:keys [component args]
                :as c} (<! ch)]
-          (om/set-state! owner c)
+          (om/update-state! owner #(merge % c))
           (recur)))))
   (render-state [_ {:keys [component args ch]}]
     (dom/div
