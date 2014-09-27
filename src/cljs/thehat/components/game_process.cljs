@@ -2,7 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponentk]]
-            [thehat.helpers :refer [nbsp]]
+            [thehat.helpers :refer [nbsp twitter]]
             [cljs.core.async :as async :refer [put!]]))
 
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
@@ -21,7 +21,10 @@
     (case (compare team-1 team-2)
       1 "Team 1 won!!!"
       -1 "Team 2 won!!!"
-      0 "DRAW"))))
+      0 "DRAW"))
+   (dom/h2 "Share result:")
+   twitter
+   ))
 
 (defn in-progress [owner {:keys [team-1 team-2 words current-round time
                                  max-time max-words]
@@ -174,6 +177,7 @@
   (render-state [_ {:keys [words time current-round interval]
                     :as s}]
     (cond
+     (= true true) (final-score owner s)
      (= current-round :pause) (pause owner)
      (= (count words) 0) (do
                            (clear-interval owner)

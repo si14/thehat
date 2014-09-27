@@ -48,3 +48,4 @@
 (defn run []
   (om/root root app-state
            {:target (. js/document (getElementById "app"))}))
+

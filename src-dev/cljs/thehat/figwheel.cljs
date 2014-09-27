@@ -9,6 +9,5 @@
 
 (fw/watch-and-reload
  :jsload-callback  (fn []
-                     (run)
                      (reset! app-state @app-state)
                      (put! route-ch {:component game})))
