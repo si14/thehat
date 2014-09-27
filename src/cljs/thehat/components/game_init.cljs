@@ -1,8 +1,6 @@
 (ns thehat.components.game-init
-  (:require [om.core :as om :include-macros true]
-            [om-tools.dom :as dom :include-macros true]
+  (:require [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponentk]]
-            [secretary.core :as secretary :include-macros true]
             [cljs.core.async :as async :refer [put!]]))
 
 (defn select-deck
