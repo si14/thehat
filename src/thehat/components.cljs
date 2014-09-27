@@ -15,11 +15,94 @@
     :team-1 :team-2
     :team-2 :team-1))
 
+(defn final-score [owner {:keys [team-1 team-2]}]
+  (dom/div
+   (dom/b
+    (case (compare team-1 team-2)
+      1 "Team 1 won!!!"
+      -1 "Team 2 won!!!"
+      0 "DRAW"))))
+
+(defn in-progress [owner {:keys [team-1 team-2 words current-team time]
+                          :as s}]
+  (dom/div
+   (dom/div time)
+   (dom/div (str "words count: " (count words)))
+   (dom/div
+    (dom/span
+     (str "Teams 1: " team-1))
+    (dom/span
+     (str "Teams 2: " team-2)))
+
+   (dom/div
+    (dom/span
+     (dom/b (first words)))
+
+    (dom/button
+     {:on-click (fn []
+                  (om/update-state!
+                   owner
+                   #(assoc %
+                      current-team (inc (get s current-team))
+                      :current-team (next-team current-team)
+                      :words (into [] (drop 1 words)))))}
+     "+")
+
+    (dom/button
+     {:on-click (fn []
+                  (om/update-state!
+                   owner #(assoc %
+                            current-team (max 0 (dec (get s current-team)))
+                            :current-team (next-team current-team)
+                            :words (into [] (drop 1 words)))))}
+     "-"))))
+
+(defn last-word [owner {:keys [words team-1 team-2 current-team]}]
+  (dom/div
+   (dom/div "FINISHED")
+   (dom/div (str "words count: " (count words)))
+   (dom/div
+    (dom/span
+     (str "Teams 1: " team-1))
+    (dom/span
+     (str "Teams 2: " team-2)))
+
+   (dom/div
+    (dom/span
+     (dom/b (first words)))
+
+    (dom/button
+     {:on-click (fn []
+                  (om/update-state!
+                   owner
+                   #(assoc %
+                      :team-1 (inc team-1)
+                      :words [])))}
+     "team-1")
+
+    (dom/button
+     {:on-click (fn []
+                  (om/update-state!
+                   owner
+                   #(assoc %
+                      :team-1 (inc team-2)
+                      :words [])))}
+     "team-2")
+
+    (dom/button
+     {:on-click (fn []
+                  (om/update-state!
+                   owner
+                   #(assoc %
+                      :words [])))}
+     ":("))))
+
+
 (defcomponent game-process [{:keys [words game-ch]
                              :as data} owner]
   (init-state [_]
     {:interval nil
-     :time 3
+     :time 10
      :team-1 0
      :team-2 0
      :current-team :team-1
@@ -36,43 +119,14 @@
                (:interval)
                (js/clearInterval))))
       1000)))
-  (render-state [_ {:keys [time words current-team team-1 team-2]
+  (render-state [_ {:keys [words time]
                     :as s}]
     (dom/div
      (dom/h2 {:on-click (to-game-init game-ch)} "back")
-     (if (> time 0)
-       (dom/div time)
-       (dom/div "FINISHED"))
-
-     (dom/div {:class "t"} (str "words count: " (count words)))
-
-     (dom/div
-      (dom/span
-       (str "Teams 1: " team-1))
-      (dom/span
-       (str "Teams 2: " team-2)))
-
-     (dom/div
-      (dom/span
-       (dom/b (first words)))
-
-      (dom/button
-       {:on-click (fn []
-                    (om/update-state!
-                     owner
-                     #(assoc %
-                        current-team (inc (get s current-team))
-                        :current-team (next-team current-team)
-                        :words (into [] (drop 1 words)))))}
-       "+")
-
-      (dom/button
-       {:on-click (fn []
-                    (om/update-state!
-                     owner #(assoc %
-                              :current-team (next-team current-team)
-                              :words (into [] (drop 1 words)))))}
-       "-")))))
+     (cond
+      (and (> time 0) (> (count words) 0)) (in-progress owner s)
+      (> (count words) 0) (last-word owner s)
+      :else (final-score owner s)))))
 
 (defn select-deck
   [words ch]
