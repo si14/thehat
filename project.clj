@@ -19,7 +19,7 @@
   :figwheel {:css-dirs ["resources/public/css"]}
 
   :cljsbuild {
-    :builds [{:id "thehat"
+    :builds [{:id "dev"
               :source-paths ["src/cljs/"]
               :compiler {
                 :output-to "resources/public/js/compiled/thehat.js"
