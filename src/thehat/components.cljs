@@ -12,10 +12,23 @@
 
 (defcomponent game-process [{:keys [words game-ch]
                              :as data} owner]
-  (render [_]
-    (println data)
+ 
+     
+  (init-state [_]
+    {:time 10})
+  (will-mount [_]
+    (let [interval (js/setInterval
+                    #(let [{:keys [time]} (om/get-state owner)]
+                       (if (> time 0)
+                         (om/update-state! owner :time dec)
+                         (js/clearInterval interval)))
+                    1000)]))
+  (render-state [_ {:keys [time]}]
     (dom/div
      (dom/h2 {:on-click (to-game-init game-ch)} "back")
+     (if (> time 0)
+       (dom/span time)
+       (dom/span "FINISHED"))
      (dom/span (str "words count: " (count words)))
      (dom/span (join ", " words)))))
 
