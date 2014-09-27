@@ -22,6 +22,7 @@ body {
   }
 
   .chooser .pack {
+    cursor: pointer;
     position: relative;
     width: 100%;
     height: 30%;
@@ -73,6 +74,7 @@ body {
   }
 
   .chooser .pack {
+    cursor: pointer;
     width: 47%;
     margin: 1.25%;
     height: 140px;
