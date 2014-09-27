@@ -22,11 +22,6 @@
       -1 "Team 2 won!!!"
       0 "DRAW"))))
 
-(defn pause [{:keys [time]}]
-  (dom/div
-   (dom/div (str "PAUSE: " time))
-   (dom/div "Team 2 prepare!")))
-
 (defn in-progress [owner {:keys [team-1 team-2 words current-round time]
                           :as s}]
   (dom/div
@@ -125,12 +120,20 @@
                       (let [{:keys [time current-round round-seq]} (om/get-state owner)]
                         (cond
                          (> time 1) (om/update-state! owner :time dec)
-                         (= current-round :finish) (clear-interval owner)
+                         (or
+                          (= current-round :pause)
+                          (= current-round :finish)) (clear-interval owner)
                          :else (do
                                  (clear-interval owner)
                                  (interval owner)))))
                     1000))))))
 
+(defn pause [owner]
+  (dom/div
+   (dom/div (str "PAUSE"))
+   (dom/button
+    {:on-click #(interval owner)}
+    "Click to start team 2's turn!")))
 
 (defcomponentk game-process [[:data deck-id decks game-ch :as data] owner]
   (init-state [_]
@@ -139,8 +142,7 @@
      :team-2 0
      :round-seq [{:name :team-1
                   :time 3}
-                 {:name :pause
-                  :time 5}
+                 {:name :pause}
                  {:name :team-2
                   :time 3}
                  {:name :finish}]
@@ -153,7 +155,7 @@
     (dom/div
      (dom/h2 {:on-click (to-game-init game-ch)} "back")
      (cond
-      (= current-round :pause) (pause s)
+      (= current-round :pause) (pause owner)
       (= (count words) 0) (do
                             (clear-interval owner)
                             (final-score owner s))
