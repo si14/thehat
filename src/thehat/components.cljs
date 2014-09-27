@@ -16,3 +16,13 @@
   (render [_]
     (dom/div
      (dom/a {:class "back" :on-click #(secretary/dispatch! "#/game")} "start"))))
+
+(defcomponent rules [data owner]
+  (render [_]
+    (dom/div
+     "Game rules")))
+
+(defcomponent not-found [data owner]
+  (render [_]
+    (dom/div
+     "Not found")))

@@ -2,7 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
-            [thehat.components :refer [game new-game]]
+            [thehat.components :refer [game new-game rules not-found]]
             [figwheel.client :as fw :include-macros true]
             [secretary.core :as secretary :include-macros true :refer [defroute]]
             [cljs.core.async :as async :refer [<! >! chan close! put!]]
@@ -16,16 +16,6 @@
 (def route-ch (chan))
 
 (def app-state (atom {:text "Hello world!"}))
-
-(defcomponent rules [data owner]
-  (render [_]
-    (dom/div
-     "Game rules")))
-
-(defcomponent not-found [data owner]
-  (render [_]
-    (dom/div
-     "Not found")))
 
 (defcomponent root [data owner]
   (init-state [_]
