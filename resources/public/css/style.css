@@ -55,9 +55,13 @@ body {
 
 @media (min-width: 750px) {
   .chooser {
-    left: 50%;
-    top: 20%;
     position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -175px;
+    margin-left: -250px;
+    width: 500px;
+    height: 350px;
   }
 
   .chooser .title {
@@ -66,17 +70,11 @@ body {
   }
 
   .chooser .chooser-inner {
-    width: 500px;
-    height: 100%;
-    margin-left: -250px;
-    height: 300px;
-    text-align: center;
-    max-width: 500px;
   }
 
   .chooser .pack {
     width: 47%;
-    margin: 1%;
+    margin: 1.25%;
     height: 140px;
     float: left;
     display: table;
