@@ -16,8 +16,10 @@
 (def route-ch (chan))
 
 ;; TODO: get from server
-(def decks [{:name "Deck #1" :id 1}
-            {:name "Deck #2" :id 2}])
+(def decks [{:name "Deck #1" :words ["hello" "world"]}
+            {:name "Deck #2" :words ["why" "guys" "you"]}
+            {:name "Shuffle" :words ["so" "long" "and"]}
+            ])
 
 (def app-state (atom {:decks decks}))
 
