@@ -3,6 +3,7 @@
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
             [thehat.components :refer [game rules not-found]]
+            [thehat.cards :refer [get-decks]]
             [secretary.core :as secretary :include-macros true :refer [defroute]]
             [cljs.core.async :as async :refer [<! >! chan close! put!]]
             [goog.events :as events]
@@ -14,16 +15,7 @@
 (secretary/set-config! :prefix "#")
 (def route-ch (chan))
 
-;; TODO: get from server
-(def decks [{:id 1 :name "All" :words ["hello" "world"]}
-            {:id 2 :name "Animals" :words ["why" "guys" "you"]}
-            {:id 3 :name "Temp" :words ["so" "long" "and" "longer"]}
-            {:id 4 :name "Food" :words ["cola" "russian" "bear" "beer"]}
-            {:id 5 :name "Seas" :words ["cola" "russian" "bear" "beer"]}
-            {:id 6 :name "Drinks!" :words ["cola" "russian" "bear" "beer"]}
-            ])
-
-(def app-state (atom {:decks decks}))
+(def app-state (atom {:decks (get-decks)}))
 
 (defcomponent root [data owner]
   (init-state [_]
