@@ -7,28 +7,18 @@ body {
 
 /* Chooser */
 
-.chooser .title {
-  font-size: 20px;
-  margin-bottom: 10%;
-}
-
-.chooser .pack {
-  background-color: white;
-  border-radius: 2px;
-  border: 1px solid #ccc;
-  box-shadow: 0 0 10px #cfcdc6;
-  display: table;
-}
-
-.chooser .pack .word {
-  font-size: 32px;
-  display: table-cell;
-  vertical-align: middle;
-}
-
-@media (max-width: 800px) {
+@media (max-width: 750px) {
   .chooser {
     margin: 10%;
+  }
+
+  .chooser .title {
+    font-size: 20px;
+    margin-bottom: 10%;
+  }
+
+  .chooser .chooser-inner {
+
   }
 
   .chooser .pack {
@@ -36,8 +26,80 @@ body {
     width: 100%;
     height: 30%;
     text-align: center;
-    margin-bottom: 10%;
+    margin-bottom: 5%;
     display: table;
+  }
+
+  .chooser .pack .inside {
+    background-color: white;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px #cfcdc6;
+    display: table;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+  }
+
+  .chooser .pack .inside.rotated {
+    -webkit-transform: rotate(4deg);
+    transform: rotate(4deg);
+  }
+
+  .chooser .pack .word {
+    font-size: 32px;
+    display: table-cell;
+    vertical-align: middle;
+  }
+}
+
+@media (min-width: 750px) {
+  .chooser {
+    left: 50%;
+    top: 20%;
+    position: absolute;
+  }
+
+  .chooser .title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .chooser .chooser-inner {
+    width: 500px;
+    height: 100%;
+    margin-left: -250px;
+    height: 300px;
+    text-align: center;
+    max-width: 500px;
+  }
+
+  .chooser .pack {
+    width: 47%;
+    margin: 1%;
+    height: 140px;
+    float: left;
+    display: table;
+    text-align: center;
+    background-color: white;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px #cfcdc6;
+  }
+
+  .chooser .pack .inside {
+    display: table-cell;
+    vertical-align: middle;
+    width: 100%;
+    text-align: center;
+  }
+
+  .chooser .pack .inside.rotated {
+    display: none;
+  }
+
+  .chooser .pack .word {
+    font-size: 32px;
   }
 }
 
@@ -101,7 +163,7 @@ body {
   background-color: #a6d854;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 750px) {
   .game { }
 
   .game .card-inner {
@@ -134,7 +196,7 @@ body {
   }
 }
 
-@media (min-width: 800px) {
+@media (min-width: 750px) {
   .game {
     left: 50%;
     top: 20%;
