@@ -15,7 +15,11 @@
 (secretary/set-config! :prefix "#")
 (def route-ch (chan))
 
-(def app-state (atom {:text "Hello world!"}))
+;; TODO: get from server
+(def decks [{:name "Deck #1" :id 1}
+            {:name "Deck #2" :id 2}])
+
+(def app-state (atom {:decks decks}))
 
 (defcomponent root [data owner]
   (init-state [_]

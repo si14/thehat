@@ -10,7 +10,7 @@
 (defcomponent game [data owner]
   (render [_]
     (dom/div
-     (dom/a {:class "back" :on-click #(secretary/dispatch! "#/")} "back"))))
+     (dom/span (:text data)))))
 
 (defcomponent rules [data owner]
   (render [_]
