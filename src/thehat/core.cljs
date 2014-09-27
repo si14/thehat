@@ -1,22 +1,64 @@
 (ns thehat.core
   (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [figwheel.client :as fw :include-macros true]))
+            [om-tools.dom :as dom :include-macros true]
+            [om-tools.core :refer-macros [defcomponent]]
+            [figwheel.client :as fw :include-macros true]
+            [secretary.core :as secretary :include-macros true :refer [defroute]]
+            [cljs.core.async :as async :refer [<! >! chan close! put!]]
+            [goog.events :as events]
+            [goog.history.EventType :as EventType])
+  (:require-macros [cljs.core.async.macros :refer [go-loop]])
+  (:import goog.History))
 
 (enable-console-print!)
+(secretary/set-config! :prefix "#")
+(def route-ch (chan))
 
 (def app-state (atom {:text "Hello world!"}))
 
-(om/root
-  (fn [app owner]
-    (reify om/IRender
-      (render [_]
-        (dom/h1 nil (:text app)))))
-  app-state
-  {:target (. js/document (getElementById "app"))})
+(defcomponent rules [data owner]
+  (render [_]
+    (dom/div
+     "Game rules")))
 
- 
-(swap! app-state assoc :text "The hat!")
+(defcomponent game [data owner]
+  (render [_]
+    (dom/div
+     "Game")))
+
+(defcomponent not-found [data owner]
+  (render [_]
+    (dom/div
+     "Not found")))
+
+(defcomponent root [data owner]
+  (init-state [_]
+    {:component nil})
+  (will-mount [_]
+    (go-loop []
+      (let [c (<! route-ch)]
+        (om/set-state! owner :component c)
+        (recur))))
+  (render-state [_ {:keys [component]}]
+    (when component
+      (om/build component data))))
 
 (fw/watch-and-reload
-  :jsload-callback  (fn  []  (reset! app-state @app-state)))
+ :jsload-callback  (fn  []  (reset! app-state @app-state)))
+
+
+(defroute "/" []
+  (put! route-ch game))
+(defroute "/rules" []
+  (put! route-ch rules))
+(defroute "*" []
+  (put! route-ch not-found))
+
+
+(let [h (History.)]
+  (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
+  (doto h (.setEnabled true)))
+
+
+(om/root root app-state
+         {:target (. js/document (getElementById "app"))})
