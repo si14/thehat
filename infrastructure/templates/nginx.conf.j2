@@ -1,0 +1,51 @@
+server_names_hash_bucket_size 64;
+
+server {
+    server_name www.playthehat.com thehat.clojurecup.com www.thehat.clojurecup.com;
+    return 301 http://playthehat.com$request_uri;
+}
+
+upstream backend {
+    server 127.0.0.1:{{cloj_port}};
+}
+
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+# error_page 404             /static/404.html;
+# error_page 500 502 503 504 /static/500.html;
+
+## HTTP
+
+server {
+    listen       80;
+    server_name  playthehat.com;
+
+    access_log  off;
+    #error_log off;
+
+    #error_page 404             /public/404.html;
+    #error_page 500 502 503 504 /static/500.html;
+
+    location /api/ {
+        proxy_pass http://backend;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location / {
+        alias /opt/thehat/resources/public/;
+        expires max;
+
+        gzip_static on;
+
+        open_file_cache          max=1000 inactive=3600s;
+        open_file_cache_valid    30s;
+
+        sendfile on;
+    }
+}

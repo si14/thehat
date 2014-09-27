@@ -2,13 +2,13 @@
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent defcomponentk]]
+            [thehat.components.game-init :refer [game-init]]
             [secretary.core :as secretary :include-macros true]
             [cljs.core.async :as async :refer [<! >! chan close! put!]]
             [clojure.string :refer [join]])
   (:require-macros [cljs.core.async.macros :refer [go-loop]]))
 
-(declare game-init)
-(defn to-game-init [ch] #(put! ch {:component game-init :args {}}))
+(defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
 (defn get-words [id decks]
   (some #(when (= id (:id %)) (:words %)) decks))
@@ -26,9 +26,18 @@
       -1 "Team 2 won!!!"
       0 "DRAW"))))
 
-(defn in-progress [owner {:keys [team-1 team-2 words current-team time]
+(defn pause [{:keys [time]}]
+  (dom/div
+   (dom/div (str "PAUSE: " time))
+   (dom/div "Team 2 prepare!")))
+
+(defn in-progress [owner {:keys [team-1 team-2 words current-round time]
                           :as s}]
   (dom/div
+   (dom/div
+    (if (= current-round :team-1)
+      "TEAM 1 turn"
+      "TEAM 2 turn"))
    (dom/div time)
    (dom/div (str "words count: " (count words)))
    (dom/div
@@ -46,8 +55,7 @@
                   (om/update-state!
                    owner
                    #(assoc %
-                      current-team (inc (get s current-team))
-                      :current-team (next-team current-team)
+                      current-round (inc (get s current-round))
                       :words (into [] (drop 1 words)))))}
      "+")
 
@@ -55,8 +63,7 @@
      {:on-click (fn []
                   (om/update-state!
                    owner #(assoc %
-                            current-team (max 0 (dec (get s current-team)))
-                            :current-team (next-team current-team)
+                            current-round (max 0 (dec (get s current-round)))
                             :words (into [] (drop 1 words)))))}
      "-"))))
 
@@ -100,65 +107,85 @@
                       :words [])))}
      ":("))))
 
+(defn clear-interval [owner]
+  (-> (om/get-state owner)
+      (:interval)
+      (js/clearInterval))
+  (om/set-state! owner :interval nil))
+
+(defn interval [owner]
+  (let [round-seq (-> (om/get-state owner)
+                      (:round-seq))
+        {:keys [name time]} (first round-seq)]
+    (om/update-state!
+     owner
+     (fn [s]
+       (assoc s
+         :current-round name
+         :time time
+         :round-seq (rest round-seq)
+         :interval (js/setInterval
+                    (fn []
+                      (let [{:keys [time current-round round-seq]} (om/get-state owner)]
+                        (cond
+                         (> time 1) (om/update-state! owner :time dec)
+                         (= current-round :finish) (clear-interval owner)
+                         :else (do
+                                 (clear-interval owner)
+                                 (interval owner)))))
+                    1000))))))
+
 
 (defcomponentk game-process [[:data deck-id decks game-ch :as data] owner]
   (init-state [_]
     {:interval nil
-     :time 10
      :team-1 0
      :team-2 0
-     :current-team :team-1
+     :round-seq [{:name :team-1
+                  :time 3}
+                 {:name :pause
+                  :time 5}
+                 {:name :team-2
+                  :time 3}
+                 {:name :finish}]
+     :current-round nil
      :words (into [] (get-words deck-id decks))})
   (will-mount [_]
-    (om/set-state!
-     owner
-     :interval
-     (js/setInterval
-      #(let [{:keys [time]} (om/get-state owner)]
-         (if (> time 0)
-           (om/update-state! owner :time dec)
-           (-> (om/get-state owner)
-               (:interval)
-               (js/clearInterval))))
-      1000)))
-  (render-state [_ {:keys [words time]
+    (interval owner))
+  (render-state [_ {:keys [words time current-round interval]
                     :as s}]
     (dom/div
      (dom/h2 {:on-click (to-game-init game-ch)} "back")
      (cond
+      (= current-round :pause) (pause s)
+      (= (count words) 0) (do
+                            (clear-interval owner)
+                            (final-score owner s))
+
       (and (> time 0) (> (count words) 0)) (in-progress owner s)
       (> (count words) 0) (last-word owner s)
       :else (final-score owner s)))))
 
-(defn select-deck
-  [id ch]
-  #(put! ch {:component game-process :args {:deck-id id}}))
-
-(defn deck [{:keys [name id]} game-ch]
-  (dom/h1 {:class "deck" :on-click (select-deck id game-ch)} name))
-
-(defcomponentk game-init [[:data game-ch decks :as data] owner]
-  (render [_]
-    (dom/div
-      (dom/h3 (str "Select one of " (count decks) " decks:"))
-      (map #(deck % game-ch) decks))))
+(def components {:game-init game-init
+                 :game-process game-process
+                 })
 
 (defcomponent game [data owner]
   (init-state [_]
     {:ch (chan)
-     :component game-init
+     :component :game-init
      :args {}})
   (will-mount [_]
     (let [{:keys [ch]} (om/get-state owner)]
       (go-loop []
-        (let [{:keys [component args]
-               :as c} (<! ch)]
+        (let [c (<! ch)]
           (om/update-state! owner #(merge % c))
           (recur)))))
   (render-state [_ {:keys [component args ch]}]
-    (dom/div
-     (when component
-       (om/build component (merge data args {:game-ch ch}))))))
+    (let [c (component components)] 
+      (dom/div
+        (when c
+          (om/build c (merge data args {:game-ch ch})))))))
 
 (defcomponent rules [data owner]
   (render [_]

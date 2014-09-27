@@ -1,0 +1,6 @@
+---
+
+listen_port: 80
+server_name: "_"
+cloj_port: 1332
+web_jvmmem: 200m
