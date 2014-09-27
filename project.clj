@@ -8,19 +8,19 @@
                  [prismatic/plumbing "0.3.3"]
                  [om "0.7.3"]
                  [prismatic/om-tools "0.3.3" :exclusions [org.clojure/clojure]]
-                 [secretary "1.2.0"]
-                 [figwheel "0.1.4-SNAPSHOT"]]
+                 [secretary "1.2.0"]]
 
-  :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
-            [lein-figwheel "0.1.4-SNAPSHOT"]]
+  :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]]
 
   :source-paths ["src/clj"]
 
-  :figwheel {:css-dirs ["resources/public/css"]}
+  :profiles {:dev {:dependencies [[figwheel "0.1.4-SNAPSHOT"]]
+                   :figwheel {:css-dirs ["resources/public/css"]}
+                   :plugins [[lein-figwheel "0.1.4-SNAPSHOT"]]}}
 
   :cljsbuild {
     :builds [{:id "dev"
-              :source-paths ["src/cljs/"]
+              :source-paths ["src/cljs/" "src-dev/cljs/"]
               :compiler {:output-to "resources/public/js/compiled/thehat.js"
                          :output-dir "resources/public/js/compiled/out"
                          :optimizations :none
