@@ -3,11 +3,12 @@
     [figwheel.client :as fw :include-macros true]
     [cljs.core.async :as async :refer [put!]]
     [thehat.components :refer [game]]
-    [thehat.core :refer [app-state route-ch]]))
+    [thehat.core :refer [app-state route-ch run]]))
 
-(enable-console-print!)
+(run)
 
 (fw/watch-and-reload
  :jsload-callback  (fn []
+                     (run)
                      (reset! app-state @app-state)
                      (put! route-ch {:component game})))
