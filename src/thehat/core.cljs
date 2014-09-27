@@ -19,27 +19,30 @@
 
 (defcomponent root [data owner]
   (init-state [_]
-    {:component nil})
+    {:component nil
+     :args {}})
   (will-mount [_]
     (go-loop []
-      (let [c (<! route-ch)]
-        (om/set-state! owner :component c)
+      (let [{:keys [component args]
+             :as c} (<! route-ch)]
+        (om/set-state! owner c)
         (recur))))
-  (render-state [_ {:keys [component]}]
+  (render-state [_ {:keys [component args]
+                    :as s}]
     (when component
-      (om/build component data))))
+      (om/build component (merge data args {:route-ch route-ch})))))
 
 (fw/watch-and-reload
- :jsload-callback  (fn [] 
-                     (reset! app-state @app-state) 
+ :jsload-callback  (fn []
+                     (reset! app-state @app-state)
                      (put! route-ch game)))
 
 (defroute "/" []
-  (put! route-ch game))
+  (put! route-ch {:component game}))
 (defroute "/rules" []
-  (put! route-ch rules))
+  (put! route-ch {:component rules}))
 (defroute "*" []
-  (put! route-ch not-found))
+  (put! route-ch {:component not-found}))
 
 
 (let [h (History.)]
