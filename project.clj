@@ -30,4 +30,6 @@
               :compiler {:output-to "resources/public/thehat.js"
                          :output-dir "resources/public/out_prod"
                          :optimizations :advanced
-                         :pretty-print false}}]})
+                         :pretty-print false
+                         :preamble ["react/react.min.js"]
+                         :externs ["react/externs/react.js"]}}]})
