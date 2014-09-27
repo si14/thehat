@@ -16,8 +16,7 @@
   {:target (. js/document (getElementById "app"))})
 
  
-(swap! app-state assoc :text "The Hat!")
-
+(swap! app-state assoc :text "The hat!")
 
 (fw/watch-and-reload
-  :jsload-callback  (fn  []  (print "reloaded"))) ;; optional callback
+  :jsload-callback  (fn  []  (reset! app-state @app-state)))
