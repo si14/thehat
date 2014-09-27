@@ -8,3 +8,4 @@ resources/public/js/compiled
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
+.nrepl-port
