@@ -6,6 +6,11 @@ CACHE:
 http://fonts.googleapis.com/css?family=PT+Sans&subset=latin,cyrillic
 http://fonts.googleapis.com/css?family=PT+Sans+Caption&subset=latin,cyrillic
 
+/fonts/iconFont.eot
+/fonts/iconFont.svg
+/fonts/iconFont.ttf
+/fonts/iconFont.woff
+
 /thehat.js
 
 /
