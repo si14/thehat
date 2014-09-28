@@ -168,10 +168,8 @@
 
     (dom/button
      {:on-click (fn []
-                  (om/update-state!
-                   owner
-                   #(assoc %
-                      :words (rest words))))}
+                  (om/update-state! owner #(assoc % :words (rest words)))
+                  (interval owner))}
      ":("))))
 (defn pause [owner]
   (dom/div {:class "finished" :on-click #(interval owner)}
