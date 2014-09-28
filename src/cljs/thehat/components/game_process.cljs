@@ -122,7 +122,12 @@
         {:class "buttons"}
         (dom/div {:class "small"} "both teams can guess now")
         (dom/span {:class "icon icon-cancel-2 bt-wrong"
-                   :on-click (card-wrong (sel1 :#current-card) owner s current-round words false)})
+                   :on-click (fn []
+                               (om/update-state!
+                                owner
+                                #(assoc %
+                                   :current-round :pause
+                                   :words (into [] (drop 1 (:words %))))))})
         (dom/span nbsp)
         (dom/span {:class "icon icon-checkmark bt-right-team-1"
                    :on-click (card-right (sel1 :#current-card) owner s :team-1 words true)})
