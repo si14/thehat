@@ -162,7 +162,8 @@
                     (dom/span {:class "mobile"} "Tap")
                     (dom/span {:class "desktop"} "Click")
                     " anywhere and give another team a chance.")
-           (scores-bar current-round team-1 team-2)
+           ;; TODO: uncomment to show scores bar on pause
+           #_(scores-bar current-round team-1 team-2)
            ))
 
 (defn state-final-score [owner {:keys [team-1 team-2 game-ch]}]
