@@ -9,10 +9,10 @@
       script: cache_busting.py /opt/thehat/resources/public/game.html /opt/thehat/resources/public/thehat.css /opt/thehat/resources/public/thehat.js
 
     - name: bust caches for index
-      script: cache_busting.py /opt/thehat/resources/public/index.html /opt/thehat/resources/public/thehat.css /opt/thehat/resources/public/thehat.js
+      script: cache_busting.py /opt/thehat/resources/public/index.html /opt/thehat/resources/public/thehat.css
 
     - name: bust manifest cache
-      shell: '"# `date`" >> /opt/thehat/resources/public/cache.manifest'
+      script: manifest_bust.sh
 
     - name: gzip everything
       script: gzip.sh
