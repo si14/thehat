@@ -9,7 +9,7 @@
             [thehat.notification :as notification])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
-(def default-max-time 5)
+(def default-max-time 30)
 (def default-max-score 72)
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
