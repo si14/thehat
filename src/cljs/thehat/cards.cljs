@@ -14,9 +14,9 @@
             {:id 4
              :name "Animals"
              :words words/animals}
-            {:id 5
-             :name "Clothes"
-             :words words/clothes}
             {:id 6
              :name "Food"
-             :words words/food}])
+             :words words/food}
+            {:id 7
+             :name "Screen junkie"
+             :words words/tv}])
