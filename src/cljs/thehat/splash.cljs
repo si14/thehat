@@ -100,7 +100,7 @@
   (when-let [point (@sampler-atom)]
     (let [x (Math/floor (aget point 0))
           y (Math/floor (aget point 1))]
-      (if-not (@masked?-atom x y)
+      (when-not (@masked?-atom x y)
         (draw-point @canvas-ctx-atom x y))
       (.requestAnimationFrame js/window ticker))))
 
@@ -127,6 +127,8 @@
       (reset! canvas-ctx-atom canvas-ctx)
       (reset! masked?-atom masked?)
 
+      (ticker)
+      (ticker)
       (ticker))))
 
 #_(fw/watch-and-reload
