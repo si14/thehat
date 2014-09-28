@@ -81,9 +81,8 @@ body.landscape {
 @media (min-width: 750px) {
   .chooser {
     position: absolute;
-    top: 50%;
     left: 50%;
-    margin-top: -175px;
+    margin-top: 80px;
     margin-left: -250px;
     width: 500px;
     height: 350px;
