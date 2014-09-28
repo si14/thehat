@@ -8,7 +8,7 @@
             [dommy.core :as dommy])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
-(def default-max-time 5)
+(def default-max-time 3)
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
 (defn get-words [id decks]
@@ -20,22 +20,20 @@
     :team-2 :team-1))
 
 (defn animate-card-out
-  [div owner current-round words s clear-interval?]
-  (fn [] (do
-           (dommy/remove-class! div "bounceInLeft")
-           (dommy/add-class! div "bounceOutRight")
-           (->> (fn [e] (do
-                          (dommy/remove-class! div "bounceOutRight")
-                          (dommy/add-class! div "bounceInLeft")
-                          (om/update-state!
-                           owner
-                           #(assoc %
-                              current-round (inc (get s current-round))
-                              :words (into [] (drop 1 words))))
-                          (if clear-interval?
-                            (do (clear-interval owner)
-                                (om/set-state! owner :current-round :pause)))))
-                (dommy/listen! div :webkitAnimationEnd)))))
+  [div owner current-round words s]
+  (fn []
+    (dommy/remove-class! div "bounceInLeft")
+    (dommy/add-class! div "bounceOutRight")
+    (->> (fn [e] (do
+                   (om/update-state!
+                    owner
+                    #(assoc %
+                       current-round (inc (get s current-round))
+                       :words (into [] (drop 1 words))
+                       :current-round :pause))
+                   (dommy/remove-class! div "bounceOutRight")
+                   (dommy/add-class! div "bounceInLeft")))
+         (dommy/listen! div :webkitAnimationEnd))))
 
 (defn clear-interval [owner]
   (-> (om/get-state owner)
@@ -106,13 +104,11 @@
         {:class "buttons"}
         (dom/span {:class "icon icon-cancel-2 bt-wrong"
                    :on-click (fn []
-                               (do
                                  (om/update-state!
                                   owner #(assoc %
                                            current-round (max 0 (dec (get s current-round)))
-                                           :words (into [] (drop 1 words))))
-                                 (clear-interval owner)
-                                 (om/set-state! owner :current-round :pause)))})
+                                           :words (into [] (drop 1 words))
+                                           :current-round :pause)))})
         (dom/span nbsp)
         (dom/span {:class "icon icon-checkmark bt-right-team-1"
                    :on-click (animate-card-out
@@ -120,9 +116,7 @@
         (dom/span nbsp)
         (dom/span {:class "icon icon-checkmark bt-right-team-2"
                    :on-click (animate-card-out
-                              (sel1 :#current-card) owner :team-2 words s true)}))
-
-       )))
+                              (sel1 :#current-card) owner :team-2 words s true)})))))
 
    (dom/div
     {:class "teams"}
@@ -146,14 +140,13 @@
                               "%")}} team-2)))))
 
 (defn state-pause [owner]
-  (dom/div {:class "finished" :on-click #(do (.log js/console "int") (interval owner))}
+  (dom/div {:class "finished" :on-click #(do (interval owner))}
            (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
            (dom/div "Round finished!")
            (dom/div {:class "small"}
                     (dom/span {:class "mobile"} "Tap")
                     (dom/span {:class "desktop"} "Click")
                     " anywhere and give another team a chance.")))
-
 
 (defn state-final-score [owner {:keys [team-1 team-2 game-ch]}]
   (dom/div {:class "finished" :on-click (to-game-init game-ch)}
