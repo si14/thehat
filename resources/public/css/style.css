@@ -46,6 +46,7 @@ body.landscape {
     display: table;
     width: 100%;
     height: 100%;
+    z-index: 100;
   }
 
   .chooser .pack .word {
@@ -57,6 +58,7 @@ body.landscape {
   .chooser .pack .inside.rotated {
     -webkit-transform: rotate(4deg);
     transform: rotate(4deg);
+    z-index: -100;
   }
 
   .mobile {
@@ -80,11 +82,16 @@ body.landscape {
   }
 
   .chooser .title {
-    display: none;
+    display: block;
+    position: absolute;
+    width: 100%;
+    top: -60px;
+    font-size: 22px;
   }
 
   .chooser .chooser-inner {
     -webkit-column-count: 2;
+    -moz-column-count: 2;
     column-count: 2;
   }
 
@@ -107,6 +114,7 @@ body.landscape {
     width: 100%;
     text-align: center;
     color: white;
+    z-index: 100;
   }
 
   .chooser .pack .inside.rotated {
@@ -175,7 +183,7 @@ body.landscape {
 .game .time .progress {
   width: 50%; /* remove me */
   background-color: #66c2a5;
-  transition: width 1s;
+  transition: width 0.25s;
   transition-timing-function: linear;
 }
 
@@ -226,11 +234,13 @@ body.landscape {
     text-align: center;
     max-width: 650px;
     max-height: 650px;
+    z-index: 100;
   }
 
   .game .card-rotated {
     -webkit-transform: translate3d(0,0,0) rotate(4deg);
     transform: translate3d(0,0,0) rotate(4deg);
+    z-index: -100;
   }
 
   .game .time, .game .teams {
@@ -260,12 +270,14 @@ body.landscape {
     text-align: center;
     max-width: 500px;
     max-height: 500px;
+    z-index: 100;
   }
 
   .game .card-rotated {
     position: absolute;
     -webkit-transform: rotate(4deg);
     transform: rotate(4deg);
+    z-index: -100;
   }
 
   .game .time, .game .teams {

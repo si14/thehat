@@ -2,13 +2,8 @@
 
 - hosts: web
   tasks:
-    - name: copy uberjar
-      copy: src=../target/thehat-0.1.0-SNAPSHOT-standalone.jar dest=/opt/thehat/thehat.jar
-      notify:
-        - restart app
-
     - name: copy resources
-      local_action: command rsync -r ../resources root@{{ansible_ssh_host}}:/opt/thehat/
+      local_action: command rsync -r ../resources cloudsigma@{{ansible_ssh_host}}:/opt/thehat/
 
     - name: gzip everything
       script: gzip.sh

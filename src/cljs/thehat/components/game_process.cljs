@@ -19,20 +19,19 @@
     :team-2 :team-1))
 
 (defn final-score [owner {:keys [team-1 team-2 game-ch]}]
-  (dom/div
-   (dom/b
-    (case (compare team-1 team-2)
-      1 "Team 1 won!!!"
-      -1 "Team 2 won!!!"
-      0 "DRAW"))
-   (dom/h2 {:on-click (to-game-init game-ch)} "Play again")
-   (dom/h2 "Share result:")
-   h/twitter
-   h/facebook
-   ))
+  (dom/div {:class "finished" :on-click (to-game-init game-ch)}
+           (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
+           (dom/div (case (compare team-1 team-2)
+                      1 "Blue team won!"
+                      -1 "Green team won!"
+                      0 "Draw!"))
+           (dom/div {:class "small"}
+                    (dom/span {:class "mobile"} "Tap")
+                    (dom/span {:class "desktop"} "Click")
+                    " anywhere to return to the package list.")))
 
 (defn animate-card-out
-  [div owner current-round words]
+  [div owner current-round words s]
   (fn [] (do
            (dommy/remove-class! div "bounceInLeft")
            (dommy/add-class! div "bounceOutRight")
@@ -54,12 +53,7 @@
     {:class "time"}
     (dom/div
      {:class "progress active"
-      :style {:width (str
-                      (->> (/ time max-time)
-                           (- 1)
-                           (* 95)
-                           (+ 5))
-                      "%")}} time))
+      :style {:width (str (* 100 (/ time max-time)) "%")}} (int time)))
 
    (dom/div
     {:class "card-inner card-rotated"
@@ -83,7 +77,7 @@
                                        :words (into [] (drop 1 words)))))})
       (dom/span " ")
       (dom/span {:class "icon-checkmark bt-right"
-                 :on-click (animate-card-out (sel1 :#current-card) owner current-round words)}))))
+                 :on-click (animate-card-out (sel1 :#current-card) owner current-round words s)}))))
 
    (dom/div
     {:class "teams"}
@@ -107,46 +101,6 @@
                               "%")}} team-2)))))
 
 
-(defn last-word [owner {:keys [words team-1 team-2 current-team]}]
-  (dom/div
-   (dom/div "FINISHED")
-   (dom/div (str "words count: " (count words)))
-   (dom/div
-    (dom/span
-     (str "Teams 1: " team-1))
-    (dom/span
-     (str "Teams 2: " team-2)))
-
-   (dom/div
-    (dom/span
-     (dom/b (first words)))
-
-    (dom/button
-     {:on-click (fn []
-                  (om/update-state!
-                   owner
-                   #(assoc %
-                      :team-1 (inc team-1)
-                      :words [])))}
-     "team-1")
-
-    (dom/button
-     {:on-click (fn []
-                  (om/update-state!
-                   owner
-                   #(assoc %
-                      :team-2 (inc team-2)
-                      :words [])))}
-     "team-2")
-
-    (dom/button
-     {:on-click (fn []
-                  (om/update-state!
-                   owner
-                   #(assoc %
-                      :words [])))}
-     ":("))))
-
 (defn clear-interval [owner]
   (-> (om/get-state owner)
       (:interval)
@@ -169,24 +123,64 @@
                     (fn []
                       (let [{:keys [time current-round round-seq]} (om/get-state owner)]
                         (cond
-                         (> time 1) (om/update-state! owner :time dec)
+                         (> time 0.25) (om/update-state! owner :time #(- % 0.25))
                          (or
                           (= current-round :pause)
                           (= current-round :finish)) (clear-interval owner)
                          :else (do
                                  (clear-interval owner)
                                  (interval owner)))))
-                    1000))))))
+                    250))))))
 
+
+(defn accept-last-word
+  [owner team score words]
+  (fn []
+    (om/update-state!
+      owner
+      #(assoc %
+              team (inc score)
+              :words (rest words)))
+    (interval owner)
+    ))
+
+(defn last-word [owner {:keys [words team-1 team-2 current-team]}]
+  (dom/div
+   (dom/div "FINISHED")
+   (dom/div (str "words count: " (count words)))
+   (dom/div
+    (dom/span
+     (str "Teams 1: " team-1))
+    (dom/span
+     (str "Teams 2: " team-2)))
+
+   (dom/div
+    (dom/span
+     (dom/b (first words)))
+
+    (dom/button
+     {:on-click (accept-last-word owner :team-1 team-1 words)}
+     "team-1")
+
+    (dom/button
+     {:on-click (accept-last-word owner :team-2 team-2 words)}
+     "team-2")
+
+    (dom/button
+     {:on-click (fn []
+                  (om/update-state!
+                   owner
+                   #(assoc %
+                      :words (rest words))))}
+     ":("))))
 (defn pause [owner]
   (dom/div {:class "finished" :on-click #(interval owner)}
            (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
            (dom/div "Round finished!")
            (dom/div {:class "small"}
-                    "Switch team and then "
-                    (dom/span {:class "mobile"} "tap")
-                    (dom/span {:class "desktop"} "click")
-                    " anywhere to start next round.")))
+                    (dom/span {:class "mobile"} "Tap")
+                    (dom/span {:class "desktop"} "Click")
+                    " anywhere and give another team a chance.")))
 
 (defcomponentk game-process [[:data deck-id decks game-ch name :as data] owner]
   (init-state [_]
@@ -195,12 +189,12 @@
      :team-2 0
      :max-time 0
      :max-words 10
-     :round-seq [{:name :team-1
+     :round-seq (cycle [{:name :team-1
                   :time default-max-time}
                  {:name :pause}
                  {:name :team-2
                   :time default-max-time}
-                 {:name :finish}]
+                 {:name :pause}])
      :current-round nil
      :words (into [] (get-words deck-id decks))
      :game-ch game-ch})
@@ -210,12 +204,11 @@
   (render-state [_ {:keys [words time current-round interval]
                     :as s}]
     (cond
-     ;; (= true true) (final-score owner s)
-     (= current-round :pause) (pause owner)
      (= (count words) 0) (do
                            (clear-interval owner)
                            (final-score owner s))
 
      (and (> time 0) (> (count words) 0)) (in-progress owner name s)
      (> (count words) 0) (last-word owner s)
+     (= current-round :pause) (pause owner)
      :else (final-score owner s))))
