@@ -7,7 +7,7 @@
 (def decks [{:id 1
              :name "Random"
              :words (concat words/cs words/common words/animals
-                            words/clothes words/art words/food)}
+                            words/clothes words/food)}
             {:id 2
              :name "Computer Science"
              :words words/cs}
