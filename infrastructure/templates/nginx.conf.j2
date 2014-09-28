@@ -47,5 +47,9 @@ server {
         open_file_cache_valid    30s;
 
         sendfile on;
+
+       location ~* \.html$ {
+           expires 120s;
+       }
     }
 }
