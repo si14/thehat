@@ -19,6 +19,167 @@ body.landscape {
   margin-bottom: 15px;
 }
 
+/* Index */
+
+.body {
+  font-size: 18px;
+}
+
+.body a {
+  color: #66c2a5;
+}
+
+.body a:hover {
+  text-decoration: none;
+}
+
+.body .videoWrapper {
+	position: relative;
+	padding-bottom: 56.25%; /* 16:9 */
+	padding-top: 25px;
+	height: 0;
+}
+
+.body .videoWrapper iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+  box-shadow: 0 0 10px #cfcdc6;
+}
+
+.body .logo {
+  background-color: white;
+  border-radius: 2px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px #cfcdc6;
+  width: 250px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+}
+
+.body .logo.rotated {
+  z-index: -100000;
+  position: absolute;
+  -webkit-transform: translate3d(0,0,0) rotate(-4deg);
+  transform: translate3d(0,0,0) rotate(-4deg);
+}
+
+.vote {
+  position: fixed;
+  top: 20px;
+  right: 0px;
+  text-decoration: none;
+}
+
+.body h1 {
+  font-size: 48px;
+  margin: 0px;
+  margin-top: 10px;
+  font-weight: normal;
+}
+
+.body h2 {
+  margin: 0px;
+  font-size: 18px;
+  font-weight: normal;
+}
+
+.body .steps {
+  background-color: white;
+  border: 2px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px #cfcdc6;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.body .steps .step {
+  margin-bottom: 20px;
+}
+
+.body .steps :last-child {
+  margin: 0px;
+}
+
+.body .steps .step .num {
+  float: left;
+  width: 28px;
+  height: 24px;
+  border: 2px solid #66c2a5;
+  padding-top: 3px;
+  color: #66c2a5;
+  border-radius: 2px;
+}
+
+.body .steps .step .info {
+  overflow: hidden;
+  text-align: left;
+  padding-left: 15px;
+  padding-top: 5px;
+}
+
+.footer {
+  margin-top: 20px;
+  padding-top: 5px;
+  padding-bottom: 20px;
+  color: black;
+  font-size: 14px;
+}
+
+.footer a {
+  color: black;
+}
+
+.body .button {
+  text-align: center;
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
+
+.body .button .inner {
+  background-color: #8192b8;
+  padding: 10px 20px;
+  font-size: 140%;
+  border-radius: 2px;
+  color: white;
+  text-decoration: none;
+}
+
+.body .additional {
+  padding-top: 5px;
+  color: #8192b8;
+}
+
+@media (max-width: 750px) {
+  .vote {
+    display: none;
+  }
+
+  .body {
+    margin: 10%;
+  }
+
+  .body .logo {
+    width: 100%;
+  }
+
+  .body .logo.rotated {
+    display: none;
+  }
+}
+
+@media (min-width: 750px) {
+  .body {
+    position: absolute;
+    left: 50%;
+    margin-left: -250px;
+    width: 500px;
+  }
+}
+
 
 /* Chooser */
 
