@@ -140,7 +140,7 @@
               (dom/span {:class "icon-arrow-right"}))
      (dom/div {:class "team1"
               :style {:width (str
-                              (->> (/ team-1 max-words)
+                              (->> (/ team-1 default-max-score)
                                    (* 90)
                                    (+ 5))
                               "%")}} team-1))
@@ -149,7 +149,7 @@
      (dom/div {:class "arrow a2"} (dom/span {:class "icon-arrow-right"}))
      (dom/div {:class "team2"
               :style {:width (str
-                              (->> (/ team-2 max-words)
+                              (->> (/ team-2 default-max-score)
                                    (* 90)
                                    (+ 5))
                               "%")}} team-2)))))
@@ -192,12 +192,14 @@
   (will-mount [_]
     (interval owner))
   (did-mount [_] (. js/window initFacebook))
-  (render-state [_ {:keys [words time current-round interval]
+  (render-state [_ {:keys [words time current-round interval team-1 team-2]
                     :as s}]
     (cond
-     (>= (get s current-round) default-max-score) (do
-                                                    (clear-interval owner)
-                                                    (state-final-score owner s))
+     (or
+      (>= team-1 default-max-score)
+      (>= team-2 default-max-score)) (do
+                                       (clear-interval owner)
+                                       (state-final-score owner s))
      (= current-round :pause) (do
                                 (clear-interval owner)
                                 (state-pause owner))
