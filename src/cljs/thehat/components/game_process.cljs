@@ -10,6 +10,7 @@
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
 (def default-max-time 7)
+(def default-max-score 3)
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
 (defn get-words [id decks]
@@ -194,6 +195,9 @@
   (render-state [_ {:keys [words time current-round interval]
                     :as s}]
     (cond
+     (>= (get s current-round) default-max-score) (do
+                                                    (clear-interval owner)
+                                                    (state-final-score owner s))
      (= current-round :pause) (do
                                 (clear-interval owner)
                                 (state-pause owner))
@@ -201,4 +205,6 @@
      (= (count words) 0) (do
                            (clear-interval owner)
                            (state-final-score owner s))
-     :else (state-final-score owner s))))
+     :else (do
+             (clear-interval owner)
+             (state-final-score owner s)))))
