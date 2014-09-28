@@ -26,12 +26,9 @@
   (fn []
     (dommy/remove-class! div "bounceInLeft")
     (dommy/add-class! div "bounceOutRight")
+    (om/update-state! owner team inc)
     (->> (fn [e] (do
-                   (om/update-state!
-                    owner
-                    #(assoc %
-                       team (inc (get s team))
-                       :words (into [] (drop 1 words))))
+                   (om/update-state! owner :words #(into [] (drop 1 %)))
                    (dommy/remove-class! div "bounceOutRight")
                    (dommy/add-class! div "bounceInLeft")
                    (if set-pause?
@@ -43,12 +40,9 @@
   (fn []
     (dommy/remove-class! div "bounceInLeft")
     (dommy/add-class! div "bounceOutLeft")
+    (om/update-state! owner team #(max 0 (dec %)))
     (->> (fn [e] (do
-                   (om/update-state!
-                    owner
-                    #(assoc %
-                       team (max 0 (dec (get s team)))
-                       :words (into [] (drop 1 words))))
+                   (om/update-state! owner :words #(into [] (drop 1 %)))
                    (dommy/remove-class! div "bounceOutLeft")
                    (dommy/add-class! div "bounceInLeft")
                    (if set-pause?
