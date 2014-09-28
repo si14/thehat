@@ -1,13 +1,14 @@
 (ns thehat.core
-  (:require [om.core :as om :include-macros true]
+  (:require [goog.events :as events]
+            [goog.history.EventType :as EventType]
+            [cljs.core.async :as async :refer [<! >! chan close! put!]]
+            [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
-            [thehat.components :refer [game rules not-found]]
-            [thehat.cards :refer [get-decks]]
             [secretary.core :as secretary :include-macros true :refer [defroute]]
-            [cljs.core.async :as async :refer [<! >! chan close! put!]]
-            [goog.events :as events]
-            [goog.history.EventType :as EventType])
+            [thehat.cards :refer [get-decks]]
+            [thehat.components :refer [game rules not-found]]
+            [thehat.notification :as notification])
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:import goog.History))
 
@@ -46,6 +47,7 @@
   (doto h (.setEnabled true)))
 
 (defn run []
+  (when (re-find #"(iPad|iPhone|iPod)" js/navigator.userAgent)
+    (notification/unlock-notification))
   (om/root root app-state
            {:target (. js/document (getElementById "app"))}))
-
