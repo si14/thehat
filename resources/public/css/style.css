@@ -82,7 +82,8 @@ body.landscape {
   .chooser {
     position: absolute;
     left: 50%;
-    margin-top: 80px;
+    top: 50%;
+    margin-top: -15%;
     margin-left: -250px;
     width: 500px;
     height: 350px;
