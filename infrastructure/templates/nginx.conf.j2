@@ -48,8 +48,12 @@ server {
 
         sendfile on;
 
-       location ~* \.html$ {
-           expires 120s;
-       }
+        location ~* \.html$ {
+            expires 120s;
+        }
+
+        location ~* \.manifest$ {
+            expires 120s;
+        }
     }
 }
