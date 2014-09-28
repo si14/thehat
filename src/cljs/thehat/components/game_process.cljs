@@ -84,7 +84,8 @@
      (dom/div {:class (str "team" css)
               :style {:width (str
                               (->> (/ score default-max-score)
-                                   (* 90))
+                                   (* 85)
+                                   (+ 5))
                               "%")}} score)))
 
 (defn scores-bar [current-round team-1 team-2]
