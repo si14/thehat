@@ -167,6 +167,7 @@
            ))
 
 (defn state-final-score [owner {:keys [team-1 team-2 game-ch]}]
+  (notification/stop-notifying)
   (dom/div {:class "finished" :on-click (to-game-init game-ch)}
            (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
            (dom/div (case (compare team-1 team-2)

@@ -33,10 +33,11 @@
 
 (defonce ctx (create-context))
 
+(def osc-atom (atom nil))
+
 (defn make-sound [overall-length]
   (let [dest (.-destination ctx)
         osc1 (.createOscillator ctx)
-        osc2 (.createOscillator ctx)
         gain1 (.createGain ctx)
         gain2 (.createGain ctx)
 
@@ -49,6 +50,8 @@
 
         current-time (.-currentTime ctx)
         stop-time (+ current-time (/ overall-length 1000))]
+
+    (reset! osc-atom osc1)
 
     (.connect gain1 dest)
     (.setValueAtTime (-> gain1 .-gain) 0 0)
@@ -91,7 +94,14 @@
   (let [overall-length 5000]
     (when ctx
       (make-sound overall-length))
-    (js/setTimeout #(vibrate 1000) overall-length)))
+    ;; FIXME(Dmitry): hack for avoiding vibration if notification is cancelled
+    (js/setTimeout #(when @osc-atom (vibrate 1000)) overall-length)))
+
+(defn stop-notifying []
+  (when @osc-atom
+    ;; FIXME(Dmitry): this causes a click
+    (.stop @osc-atom 0)
+    (reset! @osc-atom nil)))
 
 (defn unlock-notification []
   (dommy/listen-once!
