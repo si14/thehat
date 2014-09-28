@@ -156,20 +156,15 @@ body.landscape {
   margin-top: 90px;
 }
 
-.game .word .buttons .bt-wrong {
-  background-color: #fc8d62;
+.game .word .buttons span.icon {
   color: white;
   padding: 15px;
   border-radius: 2px;
   cursor: pointer;
 }
 
-.game .word .buttons .bt-right {
-  background-color: #66c2a5;
-  color: white;
-  padding: 15px;
-  border-radius: 2px;
-  cursor: pointer;
+.game .word .buttons .bt-wrong {
+  background-color: #fc8d62;
 }
 
 .game .teams div, .game .time .progress {
@@ -200,11 +195,11 @@ body.landscape {
   height: 14px;
 }
 
-.game .teams .team .arrow.a1 {
+.game .teams .team .arrow.a1, .game .word .buttons .bt-right-team-1 {
   background-color: #8192b8;
 }
 
-.game .teams .team .arrow.a2 {
+.game .teams .team .arrow.a2, .game .word .buttons .bt-right-team-2 {
   background-color: #98c44d;
 }
 

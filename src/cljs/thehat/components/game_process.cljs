@@ -3,6 +3,7 @@
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponentk]]
             [thehat.helpers :as h :refer [nbsp]]
+            [clojure.string :as string]
             [cljs.core.async :as async :refer [put!]]
             [dommy.core :as dommy])
   (:use-macros [dommy.macros :only [node sel sel1]]))
@@ -18,20 +19,8 @@
     :team-1 :team-2
     :team-2 :team-1))
 
-(defn final-score [owner {:keys [team-1 team-2 game-ch]}]
-  (dom/div {:class "finished" :on-click (to-game-init game-ch)}
-           (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
-           (dom/div (case (compare team-1 team-2)
-                      1 "Blue team won!"
-                      -1 "Green team won!"
-                      0 "Draw!"))
-           (dom/div {:class "small"}
-                    (dom/span {:class "mobile"} "Tap")
-                    (dom/span {:class "desktop"} "Click")
-                    " anywhere to return to the package list.")))
-
 (defn animate-card-out
-  [div owner current-round words s]
+  [div owner current-round words s clear-interval?]
   (fn [] (do
            (dommy/remove-class! div "bounceInLeft")
            (dommy/add-class! div "bounceOutRight")
@@ -42,64 +31,11 @@
                            owner
                            #(assoc %
                               current-round (inc (get s current-round))
-                              :words (into [] (drop 1 words))))))
+                              :words (into [] (drop 1 words))))
+                          (if clear-interval?
+                            (do (clear-interval owner)
+                                (om/set-state! owner :current-round :pause)))))
                 (dommy/listen! div :webkitAnimationEnd)))))
-
-(defn in-progress [owner name {:keys [team-1 team-2 words current-round
-                                      time max-time max-words] :as s}]
-  (dom/div
-   {:class "game"}
-   (dom/div
-    {:class "time"}
-    (dom/div
-     {:class "progress active"
-      :style {:width (str (* 100 (/ time max-time)) "%")}} (int time)))
-
-   (dom/div
-    {:class "card-inner card-rotated"
-     :id "rotated-card"
-     :style {:background-image (.toDataUrl (.generate js/GeoPattern name))}}
-    nbsp)
-
-   (dom/div
-    {:class "card-inner card-inner bounceInLeft animated" :id "current-card"}
-    (dom/div
-     {:class "word"}
-     (first words)
-
-     (dom/div
-      {:class "buttons"}
-      (dom/span {:class "icon-cancel-2 bt-wrong"
-                 :on-click (fn []
-                             (om/update-state!
-                              owner #(assoc %
-                                       current-round (max 0 (dec (get s current-round)))
-                                       :words (into [] (drop 1 words)))))})
-      (dom/span " ")
-      (dom/span {:class "icon-checkmark bt-right"
-                 :on-click (animate-card-out (sel1 :#current-card) owner current-round words s)}))))
-
-   (dom/div
-    {:class "teams"}
-    (dom/div
-     {:class "team"}
-     (dom/div {:class "arrow a1"} (dom/span {:class "icon-arrow-right"}))
-     (dom/div {:class "team1"
-              :style {:width (str
-                              (->> (/ team-1 max-words)
-                                   (* 90)
-                                   (+ 5))
-                              "%")}} team-1))
-    (dom/div
-     {:class "team"}
-     (dom/div {:class "arrow a2"} (dom/span {:class "icon-arrow-right"}))
-     (dom/div {:class "team2"
-              :style {:width (str
-                              (->> (/ team-2 max-words)
-                                   (* 90)
-                                   (+ 5))
-                              "%")}} team-2)))))
-
 
 (defn clear-interval [owner]
   (-> (om/get-state owner)
@@ -122,63 +58,114 @@
          :interval (js/setInterval
                     (fn []
                       (let [{:keys [time current-round round-seq]} (om/get-state owner)]
-                        (cond
-                         (> time 0.25) (om/update-state! owner :time #(- % 0.25))
-                         (or
-                          (= current-round :pause)
-                          (= current-round :finish)) (clear-interval owner)
-                         :else (do
-                                 (clear-interval owner)
-                                 (interval owner)))))
+                        (if (> time 0) (om/update-state! owner :time #(- % 0.25)))))
                     250))))))
 
-
-(defn accept-last-word
-  [owner team score words]
-  (fn []
-    (om/update-state!
-      owner
-      #(assoc %
-              team (inc score)
-              :words (rest words)))
-    (interval owner)
-    ))
-
-(defn last-word [owner {:keys [words team-1 team-2 current-team]}]
+(defn state-in-progress [owner name {:keys [team-1 team-2 words current-round
+                                            time max-time max-words] :as s}]
   (dom/div
-   (dom/div "FINISHED")
-   (dom/div (str "words count: " (count words)))
+   {:class "game"}
    (dom/div
-    (dom/span
-     (str "Teams 1: " team-1))
-    (dom/span
-     (str "Teams 2: " team-2)))
+    {:class "time"}
+    (if (> time 0)
+      (dom/div
+       {:class "progress active"
+        :style {:width (str (* 100 (/ time max-time)) "%")}} (int time))
+      nbsp))
 
    (dom/div
-    (dom/span
-     (dom/b (first words)))
+    {:class "card-inner card-rotated"
+     :id "rotated-card"
+     :style {:background-image (.toDataUrl (.generate js/GeoPattern name))}}
+    nbsp)
 
-    (dom/button
-     {:on-click (accept-last-word owner :team-1 team-1 words)}
-     "team-1")
+   (dom/div
+    {:class "card-inner card-inner bounceInLeft animated" :id "current-card"}
+    (dom/div
+     {:class "word"}
+     (first words)
 
-    (dom/button
-     {:on-click (accept-last-word owner :team-2 team-2 words)}
-     "team-2")
+     (if (> time 0)
+       (dom/div
+        {:class "buttons"}
+        (dom/span {:class "icon icon-cancel-2 bt-wrong"
+                   :on-click (fn []
+                               (om/update-state!
+                                owner #(assoc %
+                                         current-round (max 0 (dec (get s current-round)))
+                                         :words (into [] (drop 1 words)))))})
+        (dom/span nbsp)
+        (dom/span {:class (string/join " " ["icon"
+                                            "icon-checkmark"
+                                            (str "bt-right-"
+                                                 (clojure.core/name current-round))])
+                   :on-click (animate-card-out
+                              (sel1 :#current-card) owner current-round words s false)}))
 
-    (dom/button
-     {:on-click (fn []
-                  (om/update-state! owner #(assoc % :words (rest words)))
-                  (interval owner))}
-     ":("))))
-(defn pause [owner]
-  (dom/div {:class "finished" :on-click #(interval owner)}
+       (dom/div
+        {:class "buttons"}
+        (dom/span {:class "icon icon-cancel-2 bt-wrong"
+                   :on-click (fn []
+                               (do
+                                 (om/update-state!
+                                  owner #(assoc %
+                                           current-round (max 0 (dec (get s current-round)))
+                                           :words (into [] (drop 1 words))))
+                                 (clear-interval owner)
+                                 (om/set-state! owner :current-round :pause)))})
+        (dom/span nbsp)
+        (dom/span {:class "icon icon-checkmark bt-right-team-1"
+                   :on-click (animate-card-out
+                              (sel1 :#current-card) owner :team-1 words s true)})
+        (dom/span nbsp)
+        (dom/span {:class "icon icon-checkmark bt-right-team-2"
+                   :on-click (animate-card-out
+                              (sel1 :#current-card) owner :team-2 words s true)}))
+
+       )))
+
+   (dom/div
+    {:class "teams"}
+    (dom/div
+     {:class "team"}
+     (dom/div {:class "arrow a1"} (dom/span {:class "icon-arrow-right"}))
+     (dom/div {:class "team1"
+              :style {:width (str
+                              (->> (/ team-1 max-words)
+                                   (* 90)
+                                   (+ 5))
+                              "%")}} team-1))
+    (dom/div
+     {:class "team"}
+     (dom/div {:class "arrow a2"} (dom/span {:class "icon-arrow-right"}))
+     (dom/div {:class "team2"
+              :style {:width (str
+                              (->> (/ team-2 max-words)
+                                   (* 90)
+                                   (+ 5))
+                              "%")}} team-2)))))
+
+(defn state-pause [owner]
+  (dom/div {:class "finished" :on-click #(do (.log js/console "int") (interval owner))}
            (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
            (dom/div "Round finished!")
            (dom/div {:class "small"}
                     (dom/span {:class "mobile"} "Tap")
                     (dom/span {:class "desktop"} "Click")
                     " anywhere and give another team a chance.")))
+
+
+(defn state-final-score [owner {:keys [team-1 team-2 game-ch]}]
+  (dom/div {:class "finished" :on-click (to-game-init game-ch)}
+           (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
+           (dom/div (case (compare team-1 team-2)
+                      1 "Blue team won!"
+                      -1 "Green team won!"
+                      0 "Draw!"))
+           (dom/div {:class "small"}
+                    (dom/span {:class "mobile"} "Tap")
+                    (dom/span {:class "desktop"} "Click")
+                    " anywhere to return to the package list.")))
 
 (defcomponentk game-process [[:data deck-id decks game-ch name :as data] owner]
   (init-state [_]
@@ -188,11 +175,9 @@
      :max-time 0
      :max-words 10
      :round-seq (cycle [{:name :team-1
-                  :time default-max-time}
-                 {:name :pause}
-                 {:name :team-2
-                  :time default-max-time}
-                 {:name :pause}])
+                         :time default-max-time}
+                        {:name :team-2
+                         :time default-max-time}])
      :current-round nil
      :words (into [] (get-words deck-id decks))
      :game-ch game-ch})
@@ -202,11 +187,11 @@
   (render-state [_ {:keys [words time current-round interval]
                     :as s}]
     (cond
+     (= current-round :pause) (do
+                                (clear-interval owner)
+                                (state-pause owner))
+     (> (count words) 0) (state-in-progress owner name s)
      (= (count words) 0) (do
                            (clear-interval owner)
-                           (final-score owner s))
-
-     (and (> time 0) (> (count words) 0)) (in-progress owner name s)
-     (> (count words) 0) (last-word owner s)
-     (= current-round :pause) (pause owner)
-     :else (final-score owner s))))
+                           (state-final-score owner s))
+     :else (state-final-score owner s))))
