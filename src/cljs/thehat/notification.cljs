@@ -101,7 +101,7 @@
   #_(when @osc-atom
     ;; FIXME(Dmitry): this causes a click
     (.stop @osc-atom 0)
-    (reset! @osc-atom nil)))
+    (reset! osc-atom nil)))
 
 (defn unlock-notification []
   (dommy/listen-once!
