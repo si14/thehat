@@ -24,11 +24,10 @@
    (dom/div {:class "inside"
             :style {:background-image (.toDataUrl (.generate js/GeoPattern name))}}
     (dom/div {:class "word"} name
-             (dom/div {:class "small"} "Number of words: " (count words))))))
+             (dom/div {:class "small"} (count words) " words" )))))
 
 (defcomponentk game-init [[:data game-ch decks :as data] owner]
   (render [_]
     (dom/div {:class "chooser"}
       (dom/div {:class "chooser-inner"} (dom/div {:class "title"} "Choose package:")
         (map #(deck % game-ch) decks)))))
-

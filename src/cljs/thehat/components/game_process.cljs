@@ -1,14 +1,15 @@
 (ns thehat.components.game-process
-  (:require [om.core :as om :include-macros true]
+  (:require [clojure.string :as string]
+            [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponentk]]
-            [thehat.helpers :as h :refer [nbsp]]
-            [clojure.string :as string]
             [cljs.core.async :as async :refer [put!]]
-            [dommy.core :as dommy])
+            [dommy.core :as dommy]
+            [thehat.helpers :as h :refer [nbsp]]
+            [thehat.notification :as notification])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
-(def default-max-time 3)
+(def default-max-time 7)
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
 (defn get-words [id decks]
@@ -61,6 +62,11 @@
 
 (defn state-in-progress [owner name {:keys [team-1 team-2 words current-round
                                             time max-time max-words] :as s}]
+  ;; FIXME(Dmitry): it's better to save "notified" state in state and check
+  ;; less-than here
+  (when (= time 5)
+    (notification/start-notifying))
+
   (dom/div
    {:class "game"}
    (dom/div
@@ -103,7 +109,7 @@
 
        (dom/div
         {:class "buttons"}
-        (dom/div {:class "small"} "Any team member is able to guess now.")
+        (dom/div {:class "small"} "both teams can guess now")
         (dom/span {:class "icon icon-cancel-2 bt-wrong"
                    :on-click (fn []
                                  (om/update-state!
