@@ -45,7 +45,7 @@
   (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
   (doto h (.setEnabled true)))
 
-(defn run []
+(defn ^:export run []
   (when (re-find #"(iPad|iPhone|iPod)" js/navigator.userAgent)
     (notification/unlock-notification))
   (om/root root app-state
