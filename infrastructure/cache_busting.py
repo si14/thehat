@@ -4,11 +4,10 @@ import hashlib
 
 script_path = os.path.abspath(__file__)
 project_path = os.path.dirname(os.path.dirname(script_path))
-js_path = os.path.join(project_path, "resources", "public", "js", "compiled",
+js_path = os.path.join(project_path, "resources", "public",
                        "thehat.js")
 index_path = os.path.join(project_path, "resources", "public",
-                          "index_dev.html")
-
+                          "index.html")
 
 js_hash = hashlib.sha224(open(js_path).read()).hexdigest()
 soup = BeautifulSoup(open(index_path).read())
