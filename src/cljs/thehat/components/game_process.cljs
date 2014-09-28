@@ -36,9 +36,10 @@
          (dommy/listen! div :webkitAnimationEnd))))
 
 (defn clear-interval [owner]
-  (-> (om/get-state owner)
-      (:interval)
-      (js/clearInterval))
+  (let [interval (-> (om/get-state owner)
+                     (:interval))]
+    (when interval
+      (js/clearInterval interval)))
   (om/set-state! owner :interval nil))
 
 (defn interval [owner]
@@ -56,7 +57,8 @@
          :interval (js/setInterval
                     (fn []
                       (let [{:keys [time current-round round-seq]} (om/get-state owner)]
-                        (if (> time 0) (om/update-state! owner :time #(- % 0.25)))))
+                        (if (> time 0)
+                          (om/update-state! owner :time #(- % 0.25)))))
                     250))))))
 
 (defn state-in-progress [owner name {:keys [team-1 team-2 words current-round
@@ -99,7 +101,7 @@
                                             (str "bt-right-"
                                                  (clojure.core/name current-round))])
                    :on-click (animate-card-out
-                              (sel1 :#current-card) owner current-round words s false)}))
+                              (sel1 :#current-card) owner current-round words s)}))
 
        (dom/div
         {:class "buttons"}
@@ -114,11 +116,11 @@
         (dom/span nbsp)
         (dom/span {:class "icon icon-checkmark bt-right-team-1"
                    :on-click (animate-card-out
-                              (sel1 :#current-card) owner :team-1 words s true)})
+                              (sel1 :#current-card) owner :team-1 words s)})
         (dom/span nbsp)
         (dom/span {:class "icon icon-checkmark bt-right-team-2"
                    :on-click (animate-card-out
-                              (sel1 :#current-card) owner :team-2 words s true)})))))
+                              (sel1 :#current-card) owner :team-2 words s)})))))
 
    (dom/div
     {:class "teams"}
@@ -143,7 +145,7 @@
                               "%")}} team-2)))))
 
 (defn state-pause [owner]
-  (dom/div {:class "finished" :on-click #(do (interval owner))}
+  (dom/div {:class "finished" :on-click #(interval owner)}
            (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
            (dom/div "Round finished!")
            (dom/div {:class "small"}
