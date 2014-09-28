@@ -24,7 +24,7 @@
            (dom/div (case (compare team-1 team-2)
                       1 "Blue team won!"
                       -1 "Green team won!"
-                      0 "Draw"))
+                      0 "Draw!"))
            (dom/div {:class "small"}
                     (dom/span {:class "mobile"} "Tap")
                     (dom/span {:class "desktop"} "Click")
@@ -53,12 +53,7 @@
     {:class "time"}
     (dom/div
      {:class "progress active"
-      :style {:width (str
-                      (->> (/ time max-time)
-                           (- 1)
-                           (* 95)
-                           (+ 5))
-                      "%")}} time))
+      :style {:width (str (* 100 (/ time max-time)) "%")}} (int time)))
 
    (dom/div
     {:class "card-inner card-rotated"
@@ -168,24 +163,23 @@
                     (fn []
                       (let [{:keys [time current-round round-seq]} (om/get-state owner)]
                         (cond
-                         (> time 1) (om/update-state! owner :time dec)
+                         (> time 0.25) (om/update-state! owner :time #(- % 0.25))
                          (or
                           (= current-round :pause)
                           (= current-round :finish)) (clear-interval owner)
                          :else (do
                                  (clear-interval owner)
                                  (interval owner)))))
-                    1000))))))
+                    250))))))
 
 (defn pause [owner]
   (dom/div {:class "finished" :on-click #(interval owner)}
            (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
            (dom/div "Round finished!")
            (dom/div {:class "small"}
-                    "Switch team and then "
-                    (dom/span {:class "mobile"} "tap")
-                    (dom/span {:class "desktop"} "click")
-                    " anywhere to start next round.")))
+                    (dom/span {:class "mobile"} "Tap")
+                    (dom/span {:class "desktop"} "Click")
+                    " anywhere and give another team a chance.")))
 
 (defcomponentk game-process [[:data deck-id decks game-ch name :as data] owner]
   (init-state [_]

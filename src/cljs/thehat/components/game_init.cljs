@@ -28,6 +28,6 @@
 (defcomponentk game-init [[:data game-ch decks :as data] owner]
   (render [_]
     (dom/div {:class "chooser"}
-      (dom/div {:class "chooser-inner"} (dom/div {:class "title"} "Choose package:")
+      (dom/div {:class "chooser-inner"} (dom/div {:class "title"} "Choose a package:")
         (map #(deck % game-ch) decks)))))
 
