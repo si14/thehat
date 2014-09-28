@@ -9,7 +9,7 @@
             [thehat.notification :as notification])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
-(def default-max-time 30)
+(def default-max-time 5)
 (def default-max-score 72)
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
@@ -77,6 +77,23 @@
                           (om/update-state! owner :time #(- % 0.25)))))
                     250))))))
 
+(defn team-score [current-round score team css]
+  (dom/div
+     {:class (str "team" (if (= current-round team) " inactive" ""))}
+     (dom/div {:class (str "arrow a" css)} (dom/span {:class "icon-arrow-right"}))
+     (dom/div {:class (str "team" css)
+              :style {:width (str
+                              (->> (/ score default-max-score)
+                                   (* 90)
+                                   (+ 5))
+                              "%")}} score)))
+
+(defn scores-bar [current-round team-1 team-2]
+  (dom/div
+    {:class "teams"}
+    (team-score current-round team-1 :team-2 1)
+    (team-score current-round team-2 :team-1 2)))
+
 (defn state-in-progress [owner name {:keys [team-1 team-2 words current-round
                                             time max-time max-words] :as s}]
   ;; FIXME(Dmitry): it's better to save "notified" state in state and check
@@ -135,27 +152,7 @@
         (dom/span {:class "icon icon-checkmark bt-right-team-2"
                    :on-click (card-right (sel1 :#current-card) owner s :team-2 words true)})))))
 
-   (dom/div
-    {:class "teams"}
-    (dom/div
-     {:class (str "team" (if (= current-round :team-2) " inactive" ""))}
-     (dom/div {:class "arrow a1"}
-              (dom/span {:class "icon-arrow-right"}))
-     (dom/div {:class "team1"
-              :style {:width (str
-                              (->> (/ team-1 default-max-score)
-                                   (* 90)
-                                   (+ 5))
-                              "%")}} team-1))
-    (dom/div
-     {:class (str "team" (if (= current-round :team-1) " inactive" ""))}
-     (dom/div {:class "arrow a2"} (dom/span {:class "icon-arrow-right"}))
-     (dom/div {:class "team2"
-              :style {:width (str
-                              (->> (/ team-2 default-max-score)
-                                   (* 90)
-                                   (+ 5))
-                              "%")}} team-2)))))
+   (scores-bar current-round team-1 team-2)))
 
 (defn state-pause [owner]
   (dom/div {:class "finished" :on-click #(interval owner)}
