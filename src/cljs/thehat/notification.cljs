@@ -27,8 +27,8 @@
 ;; oscillator.setWaveTable( wavetable );
 
 (defn create-context []
-  (let [constructor (or js/window.AudioContext
-                        js/window.webkitAudioContext)]
+  (when-let [constructor (or js/window.AudioContext
+                             js/window.webkitAudioContext)]
     (constructor.)))
 
 (defonce ctx (create-context))
@@ -45,7 +45,7 @@
         decay 30
         pulse-length (+ attack plateau decay)
         final-pulse-length (* pulse-length 2)
-        exponent 0.5
+        exponent 0.6
 
         current-time (.-currentTime ctx)
         stop-time (+ current-time (/ overall-length 1000))]
@@ -89,5 +89,6 @@
 
 (defn start-notifying []
   (let [overall-length 5000]
-    (make-sound overall-length)
+    (when ctx
+      (make-sound overall-length))
     (js/setTimeout #(vibrate 1000) overall-length)))
