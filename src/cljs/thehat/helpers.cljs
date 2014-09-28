@@ -22,17 +22,30 @@
 
 ;; Sharing
 
+(defn sharing-inner [link] (dom/div {:class "sharing-inner"} link))
+
 (def twitter
-  (dom/a {:class "twitter-hashtag-button "
+  (sharing-inner (dom/a {:class "twitter-hashtag-button "
           :href "https://twitter.com/intent/tweet?button_hashtag=thehat&text=I%20just%20played!"
           :data-size="large"
           :data-url="http://playthehat.com"}
-         "Tweet #thehat"))
+         "Tweet #thehat")))
 (def facebook
-  (dom/div {:class "fb-like"
+  (sharing-inner (dom/div {:class "fb-like"
           :data-href "http://playthehat.com"
           :data-layout "button_count"
           :data-action "like"
           :data-show-faces "true"
           :data-share "false"
-          }))
+          })))
+
+(def google
+  (sharing-inner (dom/div {:class "g-plus"
+                           :data-action "share"
+                           :data-annotation "bubble"
+                           :data-height "24"
+                           :data-href "http://playthehat.com"
+                           })))
+
+(defn init-google [] (. js/window.gapi.plus go))
+

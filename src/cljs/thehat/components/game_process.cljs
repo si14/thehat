@@ -9,7 +9,7 @@
             [thehat.notification :as notification])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
-(def default-max-time 7)
+(def default-max-time 30)
 (def default-max-score 72)
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
@@ -176,7 +176,11 @@
            (dom/div {:class "small"}
                     (dom/span {:class "mobile"} "Tap")
                     (dom/span {:class "desktop"} "Click")
-                    " anywhere to return to the deck list.")))
+                    " anywhere to return to the deck list.")
+           (dom/div {:class "sharing"}
+                    h/twitter
+                    h/google
+                    h/facebook)))
 
 (defcomponentk game-process [[:data deck-id decks game-ch name :as data] owner]
   (init-state [_]
@@ -194,7 +198,7 @@
      :game-ch game-ch})
   (will-mount [_]
     (interval owner))
-  (did-mount [_] (. js/window initFacebook))
+  (did-mount [_] (. js/window initFacebook) (h/init-google))
   (render-state [_ {:keys [words time current-round interval team-1 team-2]
                     :as s}]
     (cond

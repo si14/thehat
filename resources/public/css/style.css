@@ -336,3 +336,7 @@ body.landscape {
 .finished div.small {
   font-size: 60%;
 }
+
+.sharing-inner {
+  height: 20px;
+}
