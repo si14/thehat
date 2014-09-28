@@ -13,23 +13,22 @@
             {:id 6 :name "Drinks!" :words ["cola" "russian" "bear" "beer"]}])
 
 
-
-
-
-
-
-
-
-(def decks [{:name "Random"
+(def decks [{:id 1
+             :name "Random"
              :words (concat words/cs words/common words/animals
                             words/clothes words/art words/food)}
-            {:name "Computer Science"
+            {:id 2
+             :name "Computer Science"
              :words words/cs}
-            {:name "Common"
+            {:id 3
+             :name "Common"
              :words words/common}
-            {:name "Animals"
+            {:id 4
+             :name "Animals"
              :words words/animals}
-            {:name "Clothes"
+            {:id 5
+             :name "Clothes"
              :words words/clothes}
-            {:name "Food"
+            {:id 6
+             :name "Food"
              :words words/food}])
