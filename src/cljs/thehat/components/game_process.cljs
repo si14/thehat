@@ -10,7 +10,7 @@
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
 (def default-max-time 7)
-(def default-max-score 3)
+(def default-max-score 72)
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
 (defn get-words [id decks]
