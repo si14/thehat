@@ -1,35 +1,25 @@
-(ns thehat.sound
+(ns thehat.notification
   (:require [figwheel.client :as fw :include-macros true]
             [dommy.core :as dommy])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
 (enable-console-print!)
 
-;; var envelope = audioContext.createGainNode();
-;; mySoundNode.connect( envelope );
-;; envelope.connect( audioContext.destination );
-
-;; var now = audioContext.currentTime;
-;; envelope.gain.setValueAtTime( 0, now );
-;; envelope.gain.linearRampToValueAtTime( 1.0, now + 2.0 );
-;; envelope.gain.linearRampToValueAtTime( 0.0, now + 4.0 );
-;; mySoundNode.noteOn(0);
-
 ;; ---
 
-    ;; var filter = audioContext.createBiquadFilter();
-    ;; filter.type = filter.LOWPASS;
-    ;; filter.frequency = 0;
-    ;; filter.Q = 0;
+;; var filter = audioContext.createBiquadFilter();
+;; filter.type = filter.LOWPASS;
+;; filter.frequency = 0;
+;; filter.Q = 0;
 
-    ;; // sweep the frequency from 0-5k; sweep the Q from 20 to 0.
-    ;; var now = audioContext.currentTime;
-    ;; filter.frequency.setValueAtTime( 0, now );
-    ;; filter.frequency.linearRampToValueAtTime( 2000.0, now + 2.0 );
-    ;; filter.frequency.linearRampToValueAtTime( 0.0, now + 4.0 );
+;; // sweep the frequency from 0-5k; sweep the Q from 20 to 0.
+;; var now = audioContext.currentTime;
+;; filter.frequency.setValueAtTime( 0, now );
+;; filter.frequency.linearRampToValueAtTime( 2000.0, now + 2.0 );
+;; filter.frequency.linearRampToValueAtTime( 0.0, now + 4.0 );
 
-    ;; filter.Q.setValueAtTime( 20.0, now );
-    ;; filter.Q.linearRampToValueAtTime( 10.0, now + 4 );
+;; filter.Q.setValueAtTime( 20.0, now );
+;; filter.Q.linearRampToValueAtTime( 10.0, now + 4 );
 
 ;;; ---
 
@@ -43,7 +33,7 @@
 
 (defonce ctx (create-context))
 
-(defn make-sound []
+(defn make-sound [overall-length]
   (let [dest (.-destination ctx)
         osc1 (.createOscillator ctx)
         osc2 (.createOscillator ctx)
@@ -55,7 +45,6 @@
         decay 30
         pulse-length (+ attack plateau decay)
         final-pulse-length (* pulse-length 2)
-        overall-length 5000
         exponent 0.5
 
         current-time (.-currentTime ctx)
@@ -74,7 +63,6 @@
         (let [pulse-plateau-start (+ pulse-ramp-up-start (/ attack 1000))
               pulse-ramp-down-start (+ pulse-plateau-start (/ plateau 1000))
               pulse-end (+ pulse-ramp-down-start (/ decay 1000))]
-          (prn pulse-ramp-up-start pulse-end)
           (.linearRampToValueAtTime (-> gain1 .-gain) 0.5 pulse-plateau-start)
           (.setValueAtTime (-> gain1 .-gain) 0.5 pulse-ramp-down-start)
           (.linearRampToValueAtTime (-> gain1 .-gain) 0 pulse-end)
@@ -92,3 +80,14 @@
     (.start osc1 current-time)
     (.stop osc1 (+ stop-time (/ final-pulse-length 1000)
                    (/ decay 1000)))))
+
+(defn vibrate [length]
+  (cond
+     (.-vibrate js/navigator) (.vibrate js/navigator 1000)
+     (.-webkitVibrate js/navigator) (.webkitVibrate js/navigator 1000)
+     (.-mozVibrate js/navigator) (.mozVibrate js/navigator 1000)))
+
+(defn start-notifying []
+  (let [overall-length 5000]
+    (make-sound overall-length)
+    (js/setTimeout #(vibrate 1000) overall-length)))
