@@ -79,7 +79,7 @@
 
 (defn team-score [current-round score team css]
   (dom/div
-     {:class (str "team" (if (= current-round team) " inactive" ""))}
+     {:class (str "team" (if (= current-round team) "" " inactive"))}
      (dom/div {:class (str "arrow a" css)} (dom/span {:class "icon-arrow-right"}))
      (dom/div {:class (str "team" css)
               :style {:width (str
@@ -90,8 +90,8 @@
 (defn scores-bar [current-round team-1 team-2]
   (dom/div
     {:class "teams"}
-    (team-score current-round team-1 :team-2 1)
-    (team-score current-round team-2 :team-1 2)))
+    (team-score current-round team-1 :team-1 1)
+    (team-score current-round team-2 :team-2 2)))
 
 (defn state-in-progress [owner name {:keys [team-1 team-2 words current-round
                                             time max-time max-words] :as s}]
@@ -154,6 +154,7 @@
    (scores-bar current-round team-1 team-2)))
 
 (defn state-pause [owner {:keys [current-round team-1 team-2]}]
+  (dom/div
   (dom/div {:class "finished" :on-click #(interval owner)}
            (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
            (dom/div "Round finished!")
@@ -162,8 +163,11 @@
                     (dom/span {:class "desktop"} "Click")
                     " anywhere and give another team a chance.")
            ;; TODO: uncomment to show scores bar on pause
-           #_(scores-bar current-round team-1 team-2)
-           ))
+           )
+
+  (dom/div {:class "game"}
+           (dom/div {:class "card-placeholder"})
+           (scores-bar current-round team-1 team-2))))
 
 (defn state-final-score [owner {:keys [team-1 team-2 game-ch]}]
   (notification/stop-notifying)

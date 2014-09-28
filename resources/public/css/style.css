@@ -409,6 +409,10 @@ body.landscape .game .word .buttons {
   height: 18px;
 }
 
+.game .time {
+  height: 20px;
+}
+
 @media (max-width: 750px) {
   .game { }
 
@@ -479,6 +483,10 @@ body.landscape .game .word .buttons {
   .game .teams {
     margin-top: 50px;
     margin-bottom: 0px;
+  }
+
+  .card-placeholder {
+    height: 372px;
   }
 }
 
