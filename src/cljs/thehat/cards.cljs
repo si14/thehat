@@ -1,9 +1,6 @@
 (ns thehat.cards
   (:require [thehat.words :as words]))
 
-(declare decks)
-(defn get-decks [] (map #(assoc % :words (-> % :words shuffle)) decks))
-
 (def decks [{:id 1
              :name "Random"
              :words (concat words/cs words/common words/animals

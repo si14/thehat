@@ -6,7 +6,7 @@
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]
             [secretary.core :as secretary :include-macros true :refer [defroute]]
-            [thehat.cards :refer [get-decks]]
+            [thehat.cards :refer [decks]]
             [thehat.components :refer [game rules not-found]]
             [thehat.notification :as notification])
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
@@ -16,7 +16,7 @@
 (secretary/set-config! :prefix "#")
 (def route-ch (chan))
 
-(def app-state (atom {:decks (get-decks)}))
+(def app-state (atom {:decks decks}))
 
 (defcomponent root [data owner]
   (init-state [_]

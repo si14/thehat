@@ -14,7 +14,9 @@
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
 (defn get-words [id decks]
-  (some #(when (= id (:id %)) (:words %)) decks))
+  (->> decks
+       (some #(when (= id (:id %)) (:words %)))
+       (shuffle)))
 
 (defn next-team [t]
   (condp = t
