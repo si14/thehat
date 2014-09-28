@@ -5,6 +5,9 @@
     - name: copy resources
       local_action: command rsync -r ../resources cloudsigma@{{ansible_ssh_host}}:/opt/thehat/
 
+    - name: bust caches
+      script: infrastructure/cache_busting.py /opt/thehat/resources/public/game.html /opt/thehat/resources/public/thehat.css /opt/thehat/resources/public/thehat.js
+
     - name: gzip everything
       script: gzip.sh
 

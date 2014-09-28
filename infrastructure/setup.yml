@@ -52,6 +52,12 @@
     - name: copy init script
       template: src=templates/initscript.j2 dest=/etc/init.d/thehat mode=0777
 
+    - name: install pip
+      apt: pkg=python-pip state=present
+
+    - name: install python deps
+      shell: pip install beautifulsoup4 requests
+
   handlers:
     - name: restart nginx
       service: name=nginx state=restarted
