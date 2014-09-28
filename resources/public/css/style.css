@@ -131,6 +131,7 @@ body.landscape {
 
   .chooser .pack .word {
     font-size: 32px;
+    line-height: 32px;
   }
 
   .mobile {
