@@ -176,7 +176,7 @@
            (dom/div {:class "small"}
                     (dom/span {:class "mobile"} "Tap")
                     (dom/span {:class "desktop"} "Click")
-                    " anywhere to return to the package list.")))
+                    " anywhere to return to the deck list.")))
 
 (defcomponentk game-process [[:data deck-id decks game-ch name :as data] owner]
   (init-state [_]
