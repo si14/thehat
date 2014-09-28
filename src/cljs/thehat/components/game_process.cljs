@@ -154,14 +154,16 @@
 
    (scores-bar current-round team-1 team-2)))
 
-(defn state-pause [owner]
+(defn state-pause [owner {:keys [current-round team-1 team-2]}]
   (dom/div {:class "finished" :on-click #(interval owner)}
            (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
            (dom/div "Round finished!")
            (dom/div {:class "small"}
                     (dom/span {:class "mobile"} "Tap")
                     (dom/span {:class "desktop"} "Click")
-                    " anywhere and give another team a chance.")))
+                    " anywhere and give another team a chance.")
+           (scores-bar current-round team-1 team-2)
+           ))
 
 (defn state-final-score [owner {:keys [team-1 team-2 game-ch]}]
   (dom/div {:class "finished" :on-click (to-game-init game-ch)}
@@ -207,7 +209,7 @@
                                        (state-final-score owner s))
      (= current-round :pause) (do
                                 (clear-interval owner)
-                                (state-pause owner))
+                                (state-pause owner s))
      (> (count words) 0) (state-in-progress owner name s)
      (= (count words) 0) (do
                            (clear-interval owner)
