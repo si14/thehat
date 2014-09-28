@@ -160,8 +160,16 @@ body.landscape {
   padding-top: 70px;
 }
 
+body.landscape .game .word {
+  padding-top: 10px;
+}
+
 .game .word .buttons {
   margin-top: 70px;
+}
+
+body.landscape .game .word .buttons {
+  margin-top: 10px;
 }
 
 .game .word .buttons span.icon {
