@@ -172,7 +172,8 @@
            (dom/div (case (compare team-1 team-2)
                       1 "Blue team won!"
                       -1 "Green team won!"
-                      0 "Draw!"))
+                      0 "Draw!")
+                    " " team-1 ":" team-2)
            (dom/div {:class "small"}
                     (dom/span {:class "mobile"} "Tap")
                     (dom/span {:class "desktop"} "Click")
