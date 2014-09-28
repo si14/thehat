@@ -50,5 +50,3 @@
     (notification/unlock-notification))
   (om/root root app-state
            {:target (. js/document (getElementById "app"))}))
-
-(run)
