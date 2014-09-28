@@ -30,8 +30,7 @@
                     owner
                     #(assoc %
                        current-round (inc (get s current-round))
-                       :words (into [] (drop 1 words))
-                       :current-round :pause))
+                       :words (into [] (drop 1 words))))
                    (dommy/remove-class! div "bounceOutRight")
                    (dommy/add-class! div "bounceInLeft")))
          (dommy/listen! div :webkitAnimationEnd))))
@@ -121,12 +120,16 @@
                                            :current-round :pause)))})
         (dom/span nbsp)
         (dom/span {:class "icon icon-checkmark bt-right-team-1"
-                   :on-click (animate-card-out
-                              (sel1 :#current-card) owner :team-1 words s)})
+                   :on-click (comp
+                              #(om/set-state! owner :current-round :pause)
+                              (animate-card-out
+                               (sel1 :#current-card) owner :team-1 words s))})
         (dom/span nbsp)
         (dom/span {:class "icon icon-checkmark bt-right-team-2"
-                   :on-click (animate-card-out
-                              (sel1 :#current-card) owner :team-2 words s)})))))
+                   :on-click (comp
+                              #(om/set-state! owner :current-round :pause)
+                              (animate-card-out
+                               (sel1 :#current-card) owner :team-2 words s))})))))
 
    (dom/div
     {:class "teams"}
