@@ -10,7 +10,8 @@
                  [secretary "1.2.0"]
                  [prismatic/dommy "0.1.3"]]
 
-  :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]]
+  :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
+            [lein-asset-minifier "0.2.0"]]
 
   :source-paths ["src/clj"]
 
@@ -36,5 +37,13 @@
                          :output-dir "resources/public/out_prod"
                          :optimizations :advanced
                          :pretty-print false
-                         :preamble ["react/react.min.js"]
-                         :externs ["react/externs/react.js"]}}]})
+                         :preamble ["public/js/geopattern.min.js"
+                                    "public/js/facebook.js"
+                                    "public/js/twitter.js"
+                                    "react/react.min.js"]
+                         :externs ["externs.js"
+                                   "react/externs/react.js"]}}]}
+
+  :minify-assets {:assets {"resources/public/thehat.css"
+                           "resources/public/css/"}}
+  )

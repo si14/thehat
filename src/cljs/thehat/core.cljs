@@ -41,7 +41,6 @@
 (defroute "*" []
   (put! route-ch {:component not-found}))
 
-
 (let [h (History.)]
   (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
   (doto h (.setEnabled true)))
@@ -51,3 +50,5 @@
     (notification/unlock-notification))
   (om/root root app-state
            {:target (. js/document (getElementById "app"))}))
+
+(run)
