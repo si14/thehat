@@ -16,18 +16,19 @@
                     :webkitAnimationEnd (fn [e] (put! ch {:component :game-process
                                                           :args {:deck-id id :name name}})))))
 
-(defn deck [{:keys [name id]} game-ch]
+(defn deck [{:keys [name id words]} game-ch]
   (dom/div {:id (str "deck_" id)
             :class "pack animated flipInX"
             :on-click (select-deck id game-ch name)}
    (dom/div {:class "inside rotated"} "&nbsp;")
    (dom/div {:class "inside"
             :style {:background-image (.toDataUrl (.generate js/GeoPattern name))}}
-    (dom/div {:class "word"} name))))
+    (dom/div {:class "word"} name
+             (dom/div {:class "small"} "Number of words: " (count words))))))
 
 (defcomponentk game-init [[:data game-ch decks :as data] owner]
   (render [_]
     (dom/div {:class "chooser"}
-      (dom/div {:class "chooser-inner"} (dom/div {:class "title"} "Choose a package:")
+      (dom/div {:class "chooser-inner"} (dom/div {:class "title"} "Choose package:")
         (map #(deck % game-ch) decks)))))
 

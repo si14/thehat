@@ -11,6 +11,14 @@ body.portrait {
 body.landscape {
 }
 
+.small {
+  font-size: 50%;
+}
+
+.buttons .small {
+  margin-bottom: 15px;
+}
+
 
 /* Chooser */
 
@@ -153,7 +161,7 @@ body.landscape {
 }
 
 .game .word .buttons {
-  margin-top: 90px;
+  margin-top: 70px;
 }
 
 .game .word .buttons span.icon {
@@ -186,6 +194,10 @@ body.landscape {
   clear: both;
 }
 
+.game .teams .team.inactive .arrow .icon-arrow-right {
+  display: none;
+}
+
 .game .teams .team .arrow {
   width: 5%;
   float: left;
@@ -201,6 +213,14 @@ body.landscape {
 
 .game .teams .team .arrow.a2, .game .word .buttons .bt-right-team-2 {
   background-color: #98c44d;
+}
+
+.game .teams .team.inactive .arrow.a1 {
+  background-color: #8da0cb;
+}
+
+.game .teams .team.inactive .arrow.a2 {
+  background-color: #a6d854;
 }
 
 .game .teams .team .team1 {

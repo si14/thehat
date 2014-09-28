@@ -86,6 +86,7 @@
      (if (> time 0)
        (dom/div
         {:class "buttons"}
+        (dom/div {:class "small"} nbsp)
         (dom/span {:class "icon icon-cancel-2 bt-wrong"
                    :on-click (fn []
                                (om/update-state!
@@ -102,6 +103,7 @@
 
        (dom/div
         {:class "buttons"}
+        (dom/div {:class "small"} "Any team member is able to guess now.")
         (dom/span {:class "icon icon-cancel-2 bt-wrong"
                    :on-click (fn []
                                  (om/update-state!
@@ -121,8 +123,9 @@
    (dom/div
     {:class "teams"}
     (dom/div
-     {:class "team"}
-     (dom/div {:class "arrow a1"} (dom/span {:class "icon-arrow-right"}))
+     {:class (str "team" (if (= current-round :team-2) " inactive" ""))}
+     (dom/div {:class "arrow a1"}
+              (dom/span {:class "icon-arrow-right"}))
      (dom/div {:class "team1"
               :style {:width (str
                               (->> (/ team-1 max-words)
@@ -130,7 +133,7 @@
                                    (+ 5))
                               "%")}} team-1))
     (dom/div
-     {:class "team"}
+     {:class (str "team" (if (= current-round :team-1) " inactive" ""))}
      (dom/div {:class "arrow a2"} (dom/span {:class "icon-arrow-right"}))
      (dom/div {:class "team2"
               :style {:width (str
