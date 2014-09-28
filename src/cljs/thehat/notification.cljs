@@ -98,7 +98,7 @@
     (js/setTimeout #(when @osc-atom (vibrate 1000)) overall-length)))
 
 (defn stop-notifying []
-  (when @osc-atom
+  #_(when @osc-atom
     ;; FIXME(Dmitry): this causes a click
     (.stop @osc-atom 0)
     (reset! @osc-atom nil)))

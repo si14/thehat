@@ -30,7 +30,7 @@
           :data-size="large"
           :data-url="http://playthehat.com"}
          "Tweet #thehat")))
-(def facebook
+#_(def facebook
   (sharing-inner (dom/div {:class "fb-like"
           :data-href "http://playthehat.com"
           :data-layout "button_count"
@@ -39,7 +39,7 @@
           :data-share "false"
           })))
 
-(def google
+#_(def google
   (sharing-inner (dom/div {:class "g-plus"
                            :data-action "share"
                            :data-annotation "bubble"
@@ -47,5 +47,4 @@
                            :data-href "http://playthehat.com"
                            })))
 
-(defn init-google [] (. js/window.gapi.plus go))
-
+#_(defn init-google [] (. js/window.gapi.plus go))

@@ -185,8 +185,9 @@
                     " anywhere to return to the deck list.")
            (dom/div {:class "sharing"}
                     h/twitter
-                    h/google
-                    h/facebook)))
+                    ;; h/google
+                    ;; h/facebook
+                    )))
 
 (defcomponentk game-process [[:data deck-id decks game-ch name :as data] owner]
   (init-state [_]
@@ -204,7 +205,7 @@
      :game-ch game-ch})
   (will-mount [_]
     (interval owner))
-  (did-mount [_] (. js/window initFacebook) (h/init-google))
+  (did-mount [_] #_(. js/window initFacebook) #_(h/init-google))
   (render-state [_ {:keys [words time current-round interval team-1 team-2]
                     :as s}]
     (cond
