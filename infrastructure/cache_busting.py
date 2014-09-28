@@ -49,7 +49,7 @@ def process_css(resouce_name, hash):
 
 
 for resource in opts.resources:
-    hash = hashlib.sha224(open(resource).read()).hexdigest()
+    hash = hashlib.sha224(open(resource).read()).hexdigest()[:8]
     # assuming all the files have different names
     resource_name = resource.split("/")[-1]
 
