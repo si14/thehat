@@ -11,3 +11,4 @@ resources/public/js/compiled
 .nrepl-port
 resources/public/out_prod/
 resources/public/thehat.js
+resources/public/thehat.css
