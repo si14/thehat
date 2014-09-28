@@ -21,8 +21,8 @@
     :team-1 :team-2
     :team-2 :team-1))
 
-(defn animate-card-out
-  [div owner current-round words s]
+(defn card-right
+  [div owner s team words set-pause?]
   (fn []
     (dommy/remove-class! div "bounceInLeft")
     (dommy/add-class! div "bounceOutRight")
@@ -30,11 +30,30 @@
                    (om/update-state!
                     owner
                     #(assoc %
-                       current-round (inc (get s current-round))
+                       team (inc (get s team))
                        :words (into [] (drop 1 words))))
                    (dommy/remove-class! div "bounceOutRight")
-                   (dommy/add-class! div "bounceInLeft")))
-         (dommy/listen! div :webkitAnimationEnd))))
+                   (dommy/add-class! div "bounceInLeft")
+                   (if set-pause?
+                     (om/set-state! owner :current-round :pause))))
+         (dommy/listen-once! div :webkitAnimationEnd))))
+
+(defn card-wrong
+  [div owner s team words set-pause?]
+  (fn []
+    (dommy/remove-class! div "bounceInLeft")
+    (dommy/add-class! div "bounceOutLeft")
+    (->> (fn [e] (do
+                   (om/update-state!
+                    owner
+                    #(assoc %
+                       team (max 0 (dec (get s team)))
+                       :words (into [] (drop 1 words))))
+                   (dommy/remove-class! div "bounceOutLeft")
+                   (dommy/add-class! div "bounceInLeft")
+                   (if set-pause?
+                     (om/set-state! owner :current-round :pause))))
+         (dommy/listen-once! div :webkitAnimationEnd))))
 
 (defn clear-interval [owner]
   (let [interval (-> (om/get-state owner)
@@ -96,41 +115,24 @@
         {:class "buttons"}
         (dom/div {:class "small"} nbsp)
         (dom/span {:class "icon icon-cancel-2 bt-wrong"
-                   :on-click (fn []
-                               (om/update-state!
-                                owner #(assoc %
-                                         current-round (max 0 (dec (get s current-round)))
-                                         :words (into [] (drop 1 words)))))})
+                   :on-click (card-wrong (sel1 :#current-card) owner s current-round words false)})
         (dom/span nbsp)
         (dom/span {:class (string/join " " ["icon"
                                             "icon-checkmark"
                                             (str "bt-right-"
                                                  (clojure.core/name current-round))])
-                   :on-click (animate-card-out
-                              (sel1 :#current-card) owner current-round words s)}))
-
+                   :on-click (card-right (sel1 :#current-card) owner s current-round words false)}))
        (dom/div
         {:class "buttons"}
         (dom/div {:class "small"} "both teams can guess now")
         (dom/span {:class "icon icon-cancel-2 bt-wrong"
-                   :on-click (fn []
-                                 (om/update-state!
-                                  owner #(assoc %
-                                           current-round (max 0 (dec (get s current-round)))
-                                           :words (into [] (drop 1 words))
-                                           :current-round :pause)))})
+                   :on-click (card-wrong (sel1 :#current-card) owner s current-round words false)})
         (dom/span nbsp)
         (dom/span {:class "icon icon-checkmark bt-right-team-1"
-                   :on-click (comp
-                              #(om/set-state! owner :current-round :pause)
-                              (animate-card-out
-                               (sel1 :#current-card) owner :team-1 words s))})
+                   :on-click (card-right (sel1 :#current-card) owner s :team-1 words true)})
         (dom/span nbsp)
         (dom/span {:class "icon icon-checkmark bt-right-team-2"
-                   :on-click (comp
-                              #(om/set-state! owner :current-round :pause)
-                              (animate-card-out
-                               (sel1 :#current-card) owner :team-2 words s))})))))
+                   :on-click (card-right (sel1 :#current-card) owner s :team-2 words true)})))))
 
    (dom/div
     {:class "teams"}

@@ -92,3 +92,19 @@
     (when ctx
       (make-sound overall-length))
     (js/setTimeout #(vibrate 1000) overall-length)))
+
+(defn unlock-notification []
+  (dommy/listen-once!
+   (sel1 :body)
+   :touchstart
+   (fn [evt]
+     (let [dest (.-destination ctx)
+           osc (.createOscillator ctx)
+           gain (.createGain ctx)
+           current-time (.-currentTime ctx)]
+       (.connect gain dest)
+       (.setValueAtTime (-> gain .-gain) 0 0)
+       (.connect osc gain)
+       (set! (-> osc .-frequency .-value) 5)
+       (.start osc current-time)
+       (.stop osc (+ current-time 0.01))))))
