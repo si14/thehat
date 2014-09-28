@@ -1,0 +1,15 @@
+CACHE MANIFEST
+# rev 1 - this is needed for appcache busting
+CACHE:
+
+/thehat.css
+http://fonts.googleapis.com/css?family=PT+Sans&subset=latin,cyrillic
+http://fonts.googleapis.com/css?family=PT+Sans+Caption&subset=latin,cyrillic
+
+/thehat.js
+
+/
+/game.html
+
+NETWORK:
+*
