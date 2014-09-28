@@ -7,6 +7,7 @@
             [dommy.core :as dommy])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
+(def default-max-time 5)
 (defn to-game-init [ch] #(put! ch {:component :game-init :args {}}))
 
 (defn get-words [id decks]
@@ -17,7 +18,7 @@
     :team-1 :team-2
     :team-2 :team-1))
 
-(defn final-score [owner {:keys [team-1 team-2]}]
+(defn final-score [owner {:keys [team-1 team-2 game-ch]}]
   (dom/div
    (dom/b
     (case (compare team-1 team-2)
@@ -27,7 +28,23 @@
    (dom/h2 "Share result:")
    h/twitter
    h/facebook
+   (dom/h2 {:on-click (to-game-init game-ch)} "Play again")
    ))
+
+(defn animate-card-out
+  [div owner current-round words]
+  (fn [] (do
+           (dommy/remove-class! div "bounceInLeft")
+           (dommy/add-class! div "bounceOutRight")
+           (->> (fn [e] (do
+                          (dommy/remove-class! div "bounceOutRight")
+                          (dommy/add-class! div "bounceInLeft")
+                          (om/update-state!
+                           owner
+                           #(assoc %
+                              current-round (inc (get s current-round))
+                              :words (into [] (drop 1 words))))))
+                (dommy/listen! div :webkitAnimationEnd)))))
 
 (defn in-progress [owner name {:keys [team-1 team-2 words current-round
                                       time max-time max-words] :as s}]
@@ -89,20 +106,6 @@
                                    (+ 5))
                               "%")}} team-2)))))
 
-(defn animate-card-out
-  [div owner current-round words]
-  (fn [] (do
-           (dommy/remove-class! div "bounceInLeft")
-           (dommy/add-class! div "bounceOutRight")
-           (->> (fn [e] (do
-                          (dommy/remove-class! div "bounceOutRight")
-                          (dommy/add-class! div "bounceInLeft")
-                          (om/update-state!
-                           owner
-                           #(assoc %
-                              current-round (inc (get s current-round))
-                              :words (into [] (drop 1 words))))))
-                (dommy/listen! div :webkitAnimationEnd)))))
 
 (defn last-word [owner {:keys [words team-1 team-2 current-team]}]
   (dom/div
@@ -193,13 +196,14 @@
      :max-time 0
      :max-words 10
      :round-seq [{:name :team-1
-                  :time 100}
+                  :time default-max-time}
                  {:name :pause}
                  {:name :team-2
-                  :time 100}
+                  :time default-max-time}
                  {:name :finish}]
      :current-round nil
-     :words (into [] (get-words deck-id decks))})
+     :words (into [] (get-words deck-id decks))
+     :game-ch game-ch})
   (will-mount [_]
     (interval owner))
   (did-mount [_] (. js/window initFacebook))
