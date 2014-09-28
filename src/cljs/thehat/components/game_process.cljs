@@ -25,10 +25,10 @@
       1 "Team 1 won!!!"
       -1 "Team 2 won!!!"
       0 "DRAW"))
+   (dom/h2 {:on-click (to-game-init game-ch)} "Play again")
    (dom/h2 "Share result:")
    h/twitter
    h/facebook
-   (dom/h2 {:on-click (to-game-init game-ch)} "Play again")
    ))
 
 (defn animate-card-out
