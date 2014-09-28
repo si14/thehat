@@ -19,17 +19,16 @@
     :team-2 :team-1))
 
 (defn final-score [owner {:keys [team-1 team-2 game-ch]}]
-  (dom/div
-   (dom/b
-    (case (compare team-1 team-2)
-      1 "Team 1 won!!!"
-      -1 "Team 2 won!!!"
-      0 "DRAW"))
-   (dom/h2 "Share result:")
-   h/twitter
-   h/facebook
-   (dom/h2 {:on-click (to-game-init game-ch)} "Play again")
-   ))
+  (dom/div {:class "finished" :on-click #(to-game-init game-ch)}
+           (dom/div {:class "big"} (dom/span {:class "icon-flag"}))
+           (dom/div (case (compare team-1 team-2)
+                      1 "Blue team won!"
+                      -1 "Green team won!"
+                      0 "Draw"))
+           (dom/div {:class "small"}
+                    (dom/span {:class "mobile"} "Tap")
+                    (dom/span {:class "desktop"} "Click")
+                    " anywhere to return to the package list.")))
 
 (defn animate-card-out
   [div owner current-round words]
