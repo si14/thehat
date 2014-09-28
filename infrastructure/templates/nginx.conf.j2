@@ -54,6 +54,9 @@ server {
 
         location ~* \.manifest$ {
             expires 120s;
+            gzip_static off;
+            types { };
+            default_type text/cache.manifest;
         }
     }
 }
