@@ -40,6 +40,7 @@
                          :preamble ["public/js/geopattern.min.js"
                                     "public/js/facebook.js"
                                     "public/js/twitter.js"
+                                    "public/js/googleplus.js"
                                     "react/react.min.js"]
                          :externs ["externs.js"
                                    "react/externs/react.js"]}}]}
