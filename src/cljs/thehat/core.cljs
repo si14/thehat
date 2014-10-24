@@ -17,7 +17,10 @@
 
 (defn listen-animation-end! [el handler]
   ;; NOTE(Dmitry): to my surprise, at least in Chrome case matters
-  (doseq [event-name ["animationEnd" "webkitAnimationEnd" "msAnimationEnd"]]
+  (doseq [event-name ["animationend"
+                      "webkitAnimationEnd"
+                      "MSAnimationEnd"
+                      "oanimationend"]]
     (dommy/listen-once! el event-name handler)))
 
 (defn build-deck-click-handler [cursor id]
