@@ -3,24 +3,21 @@
   :url "https://github.com/clojurecup2014/thehat"
 
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2356"]
+                 [org.clojure/clojurescript "0.0-2371"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [prismatic/om-tools "0.3.6"]
                  [om "0.7.3"]
-                 [prismatic/om-tools "0.3.3" :exclusions [org.clojure/clojure]]
                  [secretary "1.2.0"]
-                 [prismatic/dommy "0.1.3"]]
+                 [prismatic/dommy "1.0.0"]
+                 [garden "1.2.5"] ;; ?
+                 ]
 
   :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
             [lein-asset-minifier "0.2.0"]]
 
   :source-paths ["src/clj"]
 
-  :profiles {:dev {:dependencies [[figwheel "0.1.4-SNAPSHOT"]
-                                  [aysylu/loom "0.5.0"]
-                                  [org.clojure/data.json "0.2.5"]
-                                  [edu.stanford.nlp/stanford-corenlp "3.3.1"]
-                                  [edu.stanford.nlp/stanford-corenlp "3.3.1"
-                                   :classifier "models"]]
+  :profiles {:dev {:dependencies [[figwheel "0.1.4-SNAPSHOT"]]
                    :figwheel {:css-dirs ["resources/public/css"]}
                    :plugins [[lein-figwheel "0.1.4-SNAPSHOT"]]}}
 
