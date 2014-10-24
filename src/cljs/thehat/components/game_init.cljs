@@ -4,8 +4,7 @@
             [thehat.helpers :refer [nbsp]]
             [cljs.core.async :as async :refer [put!]]
             [dommy.utils :as utils]
-            [dommy.core :as dommy])
-  (:use-macros [dommy.macros :only [node sel sel1]]))
+            [dommy.core :as dommy :refer-macros [node sel sel1]]))
 
 (defn select-deck
   [id ch name]
@@ -26,7 +25,7 @@
     (dom/div {:class "word"} name
              (dom/div {:class "small"} (count words) " words" )))))
 
-(defcomponentk game-init [[:data game-ch decks :as data] owner]
+#_(defcomponentk game-init [[:data game-ch decks :as data] owner]
   (render [_]
     (dom/div {:class "chooser"}
       (dom/div {:class "chooser-inner"} (dom/div {:class "title"} "Choose a deck:")

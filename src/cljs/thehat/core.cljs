@@ -1,52 +1,100 @@
 (ns thehat.core
-  (:require [goog.events :as events]
-            [goog.history.EventType :as EventType]
-            [cljs.core.async :as async :refer [<! >! chan close! put!]]
-            [om.core :as om :include-macros true]
-            [om-tools.dom :as dom :include-macros true]
-            [om-tools.core :refer-macros [defcomponent]]
-            [secretary.core :as secretary :include-macros true :refer [defroute]]
-            [thehat.cards :refer [decks]]
-            [thehat.components :refer [game rules not-found]]
-            [thehat.notification :as notification])
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:import goog.History))
+  (:require
+   [dommy.core :as dommy :refer-macros [sel1]]
+   [om.core :as om :include-macros true]
+   [om-tools.dom :as dom :include-macros true]
+   [om-tools.core :refer-macros [defcomponent defcomponentk]]
+   [plumbing.core :as p]
+   [thehat.cards :refer [decks]]
+   #_[thehat.components :refer [game rules not-found]]
+   [thehat.notification :as notification]))
 
 (enable-console-print!)
-(secretary/set-config! :prefix "#")
-(def route-ch (chan))
 
-(def app-state (atom {:decks decks}))
+(def config
+  {:round-duration 30
+   :max-score 42})
 
-(defcomponent root [data owner]
-  (init-state [_]
-    {:component nil
-     :args {}})
-  (will-mount [_]
-    (go-loop []
-      (let [{:keys [component args]
-             :as c} (<! route-ch)]
-        (om/set-state! owner c)
-        (recur))))
-  (render-state [_ {:keys [component args]
-                    :as s}]
-    (when component
-      (om/build component (merge data args {:route-ch route-ch})))))
+(defn listen-animation-end! [el handler]
+  ;; NOTE(Dmitry): to my surprise, at least in Chrome case matters
+  (doseq [event-name ["animationEnd" "webkitAnimationEnd" "msAnimationEnd"]]
+    (dommy/listen-once! el event-name handler)))
 
+(defn build-deck-click-handler [cursor id]
+  (fn []
+    (let [el (sel1 (str "#deck_" id))
+          animation-end-handler
+          (fn [e]
+            (om/update! cursor [:game :deck-id] id)
+            (om/update! cursor :current-screen :round))]
+      (dommy/remove-class! el "flipInX")
+      (dommy/add-class! el "bounce")
+      (listen-animation-end! el animation-end-handler))))
 
-(defroute "/" []
-  (put! route-ch {:component game}))
-(defroute "/rules" []
-  (put! route-ch {:component rules}))
-(defroute "*" []
-  (put! route-ch {:component not-found}))
+(defcomponentk deck-chooser
+  [[:data :as cursor]]
+  (render [_]
+    (dom/div {:class "chooser"}
+      (dom/div {:class "chooser-inner"}
+        (dom/div {:class "title"}
+          "Choose a deck:")
+        (for [{:keys [name id words-count]} decks]
+          (dom/div {:id (str "deck_" id)
+                    :class "pack animated flipInX"
+                    :on-click (build-deck-click-handler cursor id)}
+            (dom/div {:class "inside rotated"} "&nbsp;")
+            (dom/div {:class "inside"
+                      :style {:background-image
+                              (.toDataUrl (.generate js/GeoPattern name))}}
+              (dom/div {:class "word"}
+                name
+                (dom/div {:class "small"} words-count " words" )))))))))
 
-(let [h (History.)]
-  (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
-  (doto h (.setEnabled true)))
+(defcomponentk round
+  [[:data :as cursor]]
+  (render [_]
+    (dom/div "round "
+      (dom/a {:href "#"
+              :onclick #(om/update! cursor :current-screen :deck-chooser)}
+         "back"))))
+
+(defcomponentk interlude
+  []
+  (render [_]
+    (dom/div "interlude")))
+
+(defcomponentk final
+  []
+  (render [_]
+    (dom/div "final")))
+
+(def screens
+  {:deck-chooser deck-chooser
+   :round round
+   :interlude interlude
+   :final final})
+
+(defonce app-state
+  (atom {:current-screen :deck-chooser
+         :game {:time (:round-duration config)
+                :deck-id 0
+                :scores [0 0]}}))
+
+(defcomponentk root
+  [[:data current-screen :as data]]
+  (render [_]
+    (om/build (p/safe-get screens current-screen) data)))
 
 (defn ^:export run []
-  (when (re-find #"(iPad|iPhone|iPod)" js/navigator.userAgent)
+  (when (notification/is-ios?)
     (notification/unlock-notification))
-  (om/root root app-state
-           {:target (. js/document (getElementById "app"))}))
+  (om/root root app-state {:target (sel1 :#app)}))
+
+;; Local Variables:
+;; mode: clojure
+;; eval: (put-clojure-indent 'render 1)
+;; eval: (put-clojure-indent 'did-update 1)
+;; eval: (put-clojure-indent 'section 1)
+;; eval: (put-clojure-indent 'div 1)
+;; eval: (put-clojure-indent 'span 1)
+;; End:

@@ -7,8 +7,9 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [prismatic/om-tools "0.3.6"]
                  [om "0.7.3"]
-                 [secretary "1.2.0"]
+                 [prismatic/schema "0.3.1"]
                  [prismatic/dommy "1.0.0"]
+                 [prismatic/plumbing "0.3.4"]
                  [garden "1.2.5"] ;; ?
                  ]
 

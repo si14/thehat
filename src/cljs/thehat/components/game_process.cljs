@@ -4,10 +4,9 @@
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponentk]]
             [cljs.core.async :as async :refer [put!]]
-            [dommy.core :as dommy]
+            [dommy.core :as dommy :refer-macros [node sel sel1]]
             [thehat.helpers :as h :refer [nbsp]]
-            [thehat.notification :as notification])
-  (:use-macros [dommy.macros :only [node sel sel1]]))
+            [thehat.notification :as notification]))
 
 (def default-max-time 30)
 (def default-max-score 42)
@@ -189,7 +188,8 @@
                     ;; h/facebook
                     )))
 
-(defcomponentk game-process [[:data deck-id decks game-ch name :as data] owner]
+#_(defcomponentk game-process
+  [[:data deck-id decks game-ch name :as data] owner]
   (init-state [_]
     {:interval nil
      :team-1 0

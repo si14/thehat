@@ -4,7 +4,7 @@
     [cljs.core.async :as async :refer [put!]]
     [om.core :as om :include-macros true]
     [thehat.components :refer [game]]
-    [thehat.core :refer [app-state route-ch run]]))
+    [thehat.core :refer [run]]))
 
 (run)
 

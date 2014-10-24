@@ -1,7 +1,7 @@
 (ns thehat.notification
-  (:require [figwheel.client :as fw :include-macros true]
-            [dommy.core :as dommy])
-  (:use-macros [dommy.macros :only [node sel sel1]]))
+  (:require
+   [figwheel.client :as fw :include-macros true]
+   [dommy.core :as dommy :refer-macros [node sel sel1]]))
 
 (enable-console-print!)
 
@@ -118,3 +118,6 @@
        (set! (-> osc .-frequency .-value) 5)
        (.start osc current-time)
        (.stop osc (+ current-time 0.01))))))
+
+(defn is-ios? []
+  (re-find #"(iPad|iPhone|iPod)" js/navigator.userAgent))

@@ -1,7 +1,6 @@
 (ns thehat.splash
   (:require #_[figwheel.client :as fw :include-macros true]
-            [dommy.core :as dommy])
-  (:use-macros [dommy.macros :only [node sel sel1]]))
+            [dommy.core :as dommy :refer-macros [node sel sel1]]))
 
 (enable-console-print!)
 
