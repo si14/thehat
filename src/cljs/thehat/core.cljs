@@ -41,15 +41,15 @@
   [:div.chooser
    [:div.chooser-inner
     [:div.title "Choose a deck:"]
-    (for [{:keys [name id words-count]} decks]
+    (for [{:keys [name id words-count background-url]} decks]
+      ^{:key id} ;; react's key to improve rendering perf
       [:div {:id (str "deck_" id)
              :class "pack animated flipInX"
              :on-click (build-deck-click-handler id)}
        [:div.inside.rotated "&nbsp;"]
-       [:div.inside {:style {:background-image
-                             (.toDataUrl (.generate js/GeoPattern name))}}
+       [:div.inside {:style {:background-image background-url}}
         [:div.word name
-         [:div.small words-count " Words"]]]])]])
+         [:div.small words-count " words"]]]])]])
 
 (defn round []
   [:div "round "
@@ -76,12 +76,3 @@
   (when (notification/is-ios?)
     (notification/unlock-notification))
   (reagent/render-component [root] (sel1 :#app)))
-
-;; Local Variables:
-;; mode: clojure
-;; eval: (put-clojure-indent 'render 1)
-;; eval: (put-clojure-indent 'did-update 1)
-;; eval: (put-clojure-indent 'section 1)
-;; eval: (put-clojure-indent 'div 1)
-;; eval: (put-clojure-indent 'span 1)
-;; End:

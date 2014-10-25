@@ -12,7 +12,7 @@
                  :game-process game-process
                  })
 
-(defcomponent game [data owner]
+#_(defcomponent game [data owner]
   (init-state [_]
     {:ch (chan)
      :component :game-init
@@ -28,12 +28,12 @@
       (when c
         (om/build c (merge data args {:game-ch ch}))))))
 
-(defcomponent rules [data owner]
+#_(defcomponent rules [data owner]
   (render [_]
     (dom/div
      "Game rules")))
 
-(defcomponent not-found [data owner]
+#_(defcomponent not-found [data owner]
   (render [_]
     (dom/div
      "Not found")))
