@@ -1,6 +1,7 @@
 (ns thehat.components.game-init
-  (:require [om-tools.dom :as dom :include-macros true]
-            [om-tools.core :refer-macros [defcomponentk]]
+  (:require
+            ;; [om-tools.dom :as dom :include-macros true]
+            ;; [om-tools.core :refer-macros [defcomponentk]]
             [thehat.helpers :refer [nbsp]]
             [cljs.core.async :as async :refer [put!]]
             [dommy.utils :as utils]

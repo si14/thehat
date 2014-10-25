@@ -1,7 +1,8 @@
 (ns thehat.components
-  (:require [om.core :as om :include-macros true]
-            [om-tools.dom :as dom :include-macros true]
-            [om-tools.core :refer-macros [defcomponent defcomponentk]]
+  (:require
+            ;; [om.core :as om :include-macros true]
+            ;; [om-tools.dom :as dom :include-macros true]
+            ;; [om-tools.core :refer-macros [defcomponent defcomponentk]]
             [thehat.components.game-init :refer [game-init]]
             [thehat.components.game-process :refer [game-process]]
             [cljs.core.async :as async :refer [<! >! chan close! put!]])

@@ -1,9 +1,7 @@
 (ns thehat.core
   (:require
    [dommy.core :as dommy :refer-macros [sel1]]
-   [om.core :as om :include-macros true]
-   [om-tools.dom :as dom :include-macros true]
-   [om-tools.core :refer-macros [defcomponent defcomponentk]]
+   [reagent.core :as reagent :refer [atom]]
    [plumbing.core :as p]
    [thehat.cards :refer [decks]]
    #_[thehat.components :refer [game rules not-found]]
@@ -15,6 +13,11 @@
   {:round-duration 30
    :max-score 42})
 
+(defonce current-screen (atom :deck-chooser))
+(defonce current-time (atom (:round-duration config)))
+(defonce deck-id (atom nil))
+(defonce scores (atom [0 0]))
+
 (defn listen-animation-end! [el handler]
   ;; NOTE(Dmitry): to my surprise, at least in Chrome case matters
   (doseq [event-name ["animationend"
@@ -23,53 +26,42 @@
                       "oanimationend"]]
     (dommy/listen-once! el event-name handler)))
 
-(defn build-deck-click-handler [cursor id]
+(defn build-deck-click-handler [id]
   (fn []
     (let [el (sel1 (str "#deck_" id))
           animation-end-handler
           (fn [e]
-            (om/update! cursor [:game :deck-id] id)
-            (om/update! cursor :current-screen :round))]
+            (reset! deck-id id)
+            (reset! current-screen :round))]
       (dommy/remove-class! el "flipInX")
       (dommy/add-class! el "bounce")
       (listen-animation-end! el animation-end-handler))))
 
-(defcomponentk deck-chooser
-  [[:data :as cursor]]
-  (render [_]
-    (dom/div {:class "chooser"}
-      (dom/div {:class "chooser-inner"}
-        (dom/div {:class "title"}
-          "Choose a deck:")
-        (for [{:keys [name id words-count]} decks]
-          (dom/div {:id (str "deck_" id)
-                    :class "pack animated flipInX"
-                    :on-click (build-deck-click-handler cursor id)}
-            (dom/div {:class "inside rotated"} "&nbsp;")
-            (dom/div {:class "inside"
-                      :style {:background-image
-                              (.toDataUrl (.generate js/GeoPattern name))}}
-              (dom/div {:class "word"}
-                name
-                (dom/div {:class "small"} words-count " words" )))))))))
+(defn deck-chooser []
+  [:div.chooser
+   [:div.chooser-inner
+    [:div.title "Choose a deck:"]
+    (for [{:keys [name id words-count]} decks]
+      [:div {:id (str "deck_" id)
+             :class "pack animated flipInX"
+             :on-click (build-deck-click-handler id)}
+       [:div.inside.rotated "&nbsp;"]
+       [:div.inside {:style {:background-image
+                             (.toDataUrl (.generate js/GeoPattern name))}}
+        [:div.word name
+         [:div.small words-count " Words"]]]])]])
 
-(defcomponentk round
-  [[:data :as cursor]]
-  (render [_]
-    (dom/div "round "
-      (dom/a {:href "#"
-              :onclick #(om/update! cursor :current-screen :deck-chooser)}
-         "back"))))
+(defn round []
+  [:div "round "
+   [:a {:href "#"
+        :on-click #(reset! current-screen :deck-chooser)}
+    "back"]])
 
-(defcomponentk interlude
-  []
-  (render [_]
-    (dom/div "interlude")))
+(defn interlude []
+  [:div "interlude"])
 
-(defcomponentk final
-  []
-  (render [_]
-    (dom/div "final")))
+(defn final []
+  [:div "final"])
 
 (def screens
   {:deck-chooser deck-chooser
@@ -77,21 +69,13 @@
    :interlude interlude
    :final final})
 
-(defonce app-state
-  (atom {:current-screen :deck-chooser
-         :game {:time (:round-duration config)
-                :deck-id 0
-                :scores [0 0]}}))
-
-(defcomponentk root
-  [[:data current-screen :as data]]
-  (render [_]
-    (om/build (p/safe-get screens current-screen) data)))
+(defn root []
+  [(p/safe-get screens @current-screen)])
 
 (defn ^:export run []
   (when (notification/is-ios?)
     (notification/unlock-notification))
-  (om/root root app-state {:target (sel1 :#app)}))
+  (reagent/render-component [root] (sel1 :#app)))
 
 ;; Local Variables:
 ;; mode: clojure

@@ -1,6 +1,7 @@
 (ns thehat.helpers
  (:require [goog.string :as gstring]
-           [om-tools.dom :as dom :include-macros true]))
+           ;; [om-tools.dom :as dom :include-macros true]
+           ))
 
 ;; Escaping
 
@@ -22,14 +23,14 @@
 
 ;; Sharing
 
-(defn sharing-inner [link] (dom/div {:class "sharing-inner"} link))
+(defn sharing-inner [link] [:div {:class "sharing-inner"} link])
 
 (def twitter
-  (sharing-inner (dom/a {:class "twitter-hashtag-button "
-          :href "https://twitter.com/intent/tweet?button_hashtag=thehat&text=I%20just%20played!"
-          :data-size="large"
-          :data-url="http://playthehat.com"}
-         "Tweet #thehat")))
+  (sharing-inner [:a {:class "twitter-hashtag-button "
+                       :href "https://twitter.com/intent/tweet?button_hashtag=thehat&text=I%20just%20played!"
+                       :data-size="large"
+                       :data-url="http://playthehat.com"}
+                  "Tweet #thehat"]))
 #_(def facebook
   (sharing-inner (dom/div {:class "fb-like"
           :data-href "http://playthehat.com"

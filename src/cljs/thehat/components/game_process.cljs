@@ -1,8 +1,8 @@
 (ns thehat.components.game-process
   (:require [clojure.string :as string]
-            [om.core :as om :include-macros true]
-            [om-tools.dom :as dom :include-macros true]
-            [om-tools.core :refer-macros [defcomponentk]]
+            ;; [om.core :as om :include-macros true]
+            ;; [om-tools.dom :as dom :include-macros true]
+            ;; [om-tools.core :refer-macros [defcomponentk]]
             [cljs.core.async :as async :refer [put!]]
             [dommy.core :as dommy :refer-macros [node sel sel1]]
             [thehat.helpers :as h :refer [nbsp]]
