@@ -52,8 +52,9 @@
       ^{:key id} ;; react's key to improve rendering perf
       [:div {:id (str "deck_" id)
              :class "pack animated flipInX"
-             :on-click #(put! interaction-chan {:type :deck-click
-                                                :deck-id id})}
+             :on-click #(put! interaction-chan
+                              {:type :deck-click
+                               :deck-id id})}
        [:div.inside.rotated "&nbsp;"]
        [:div.inside {:style {:background-image background-url}}
         [:div.word name
@@ -61,7 +62,8 @@
 
 (defn prelude []
   [:div
-   [:div.finished {:on-click #(reset! current-screen :deck-chooser)}
+   [:div.finished {:on-click #(put! interaction-chan
+                                    {:type :prelude-click})}
     [:div.big [:span.icon-flag]
      [:div "Ready to start!"]
      [:div.small
@@ -110,6 +112,11 @@
     (dommy/remove-class! el "flipInX")
     (dommy/add-class! el "bounce")
     (listen-animation-end! el animation-end-handler)))
+
+(defmethod interaction [:prelude :prelude-click]
+  [_]
+  (reset! current-time (:round-duration config))
+  (reset! current-screen :round))
 
 (defmethod interaction :default
   [arg]
