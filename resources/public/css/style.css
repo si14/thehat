@@ -379,11 +379,11 @@ body.landscape .game .word .buttons {
   height: 14px;
 }
 
-.game .teams .team .arrow.a1, .game .word .buttons .bt-right-team-1 {
+.game .teams .team .arrow.a1, .game .word .buttons .bt-right-team-0 {
   background-color: #8192b8;
 }
 
-.game .teams .team .arrow.a2, .game .word .buttons .bt-right-team-2 {
+.game .teams .team .arrow.a2, .game .word .buttons .bt-right-team-1 {
   background-color: #98c44d;
 }
 
@@ -395,14 +395,14 @@ body.landscape .game .word .buttons {
   background-color: #a6d854;
 }
 
-.game .teams .team .team1 {
+.game .teams .team .team-0 {
   float: left;
   width: 0%; /* remove me */
   background-color: #8da0cb;
   height: 18px;
 }
 
-.game .teams .team .team2 {
+.game .teams .team .team-1 {
   float: left;
   width: 80%; /* remove me */
   background-color: #a6d854;
