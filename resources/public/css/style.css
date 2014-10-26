@@ -520,3 +520,21 @@ body.landscape .game .word .buttons {
 .sharing-inner {
   height: 20px;
 }
+
+.screen-enter {
+  opacity: 0.01;
+  transition: opacity .15s ease-in;
+}
+
+.screen-enter.screen-enter-active {
+  opacity: 1;
+}
+
+.screen-leave {
+  opacity: 1;
+  transition: opacity .15s ease-in;
+}
+
+.screen-leave.screen-leave-active {
+  opacity: 0.01;
+}

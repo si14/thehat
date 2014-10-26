@@ -38,9 +38,9 @@
                                     ;; "public/js/facebook.js"
                                     "public/js/twitter.js"
                                     ;; "public/js/googleplus.js"
-                                    "react/react.min.js"]
+                                    "react/react_with_addons.min.js"]
                          :externs ["externs.js"
-                                   "react/externs/react.js"]}}]}
+                                   "react/externs/react_with_addons.js"]}}]}
 
   :minify-assets {:assets {"resources/public/thehat.css"
                            "resources/public/css/"}}

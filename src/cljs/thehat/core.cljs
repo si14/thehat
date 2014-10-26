@@ -69,8 +69,13 @@
    :interlude interlude
    :final final})
 
+(def ctg (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
+
 (defn root []
-  [(p/safe-get screens @current-screen)])
+  [ctg {:transitionName "screen"}
+   (let [screen @current-screen]
+     ^{:key screen}
+     [(p/safe-get screens @current-screen)])])
 
 (defn ^:export run []
   (when (notification/is-ios?)
