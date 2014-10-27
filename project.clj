@@ -8,7 +8,7 @@
                  [reagent "0.4.2"]
                  [prismatic/schema "0.3.1"]
                  [prismatic/dommy "1.0.0"]
-                 [prismatic/plumbing "0.3.4"]
+                 [prismatic/plumbing "0.3.5"]
                  [garden "1.2.5"] ;; ?
                  ]
 
