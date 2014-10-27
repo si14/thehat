@@ -350,15 +350,19 @@ body.landscape .game .word .buttons {
   color: white;
   text-align: right;
   font-size: 13px;
-  padding-right: 4px;
-  transition: width 0.25s;
-  transition-timing-function: linear;
+  transition: transform 0.25s;
+  transition-timing-function: ease;
 }
 
+.game .teams div span.label, .game .time .progress span.label {
+  margin-right: 4px;
+}
+
+
 .game .time .progress {
-  width: 50%; /* remove me */
+  width: 100%;
   background-color: #66c2a5;
-  transition: width 0.25s;
+  transition: transform 0.25s;
   transition-timing-function: linear;
 }
 
@@ -377,36 +381,53 @@ body.landscape .game .word .buttons {
   padding-top: 4px;
   color: white;
   height: 14px;
+  border-width: 0px;
+  margin: 0px;
+  position: absolute;
+  z-index: 100;
 }
 
-.game .teams .team .arrow.a1, .game .word .buttons .bt-right-team-0 {
+.game .teams .team .arrow span.icon-arrow-right {
+  padding-right: 2px;
+}
+
+.game .teams .team .score {
+  float: left;
+  width: 100%;
+  z-index: -100;
+  height: 18px;
+}
+
+.game .teams .team .arrow.arrow-0, .game .word .buttons .bt-right-team-0 {
   background-color: #8192b8;
 }
 
-.game .teams .team .arrow.a2, .game .word .buttons .bt-right-team-1 {
+.game .teams .team .arrow.arrow-1, .game .word .buttons .bt-right-team-1 {
   background-color: #98c44d;
 }
 
-.game .teams .team.inactive .arrow.a1 {
+.game .teams .team.inactive .arrow.arrow-0 {
   background-color: #8da0cb;
 }
 
-.game .teams .team.inactive .arrow.a2 {
+.game .teams .team.inactive .arrow.arrow-1 {
   background-color: #a6d854;
 }
 
-.game .teams .team .team-0 {
-  float: left;
-  width: 0%; /* remove me */
+.game .teams .team .score-0 {
   background-color: #8da0cb;
-  height: 18px;
 }
 
-.game .teams .team .team-1 {
-  float: left;
-  width: 80%; /* remove me */
+.game .teams .team .score-1 {
   background-color: #a6d854;
-  height: 18px;
+}
+
+.winner-team-0 {
+  color: #8da0cb;
+}
+
+.winner-team-1 {
+  color: #a6d854;
 }
 
 .game .time {
@@ -521,6 +542,22 @@ body.landscape .game .word .buttons {
   height: 20px;
 }
 
+/*
+new styles
+FIXME(Dmitry): clean up styles above
+FIXME(Dmitry): remove/trim animate.css
+*/
+
+body {
+  /* helps with flashing scroll on card animation */
+  overflow: hidden;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+
 .screen-enter {
   opacity: 0.01;
   transition: opacity .15s ease-in;
@@ -537,4 +574,32 @@ body.landscape .game .word .buttons {
 
 .screen-leave.screen-leave-active {
   opacity: 0.01;
+}
+
+.keyframe-animated {
+  -webkit-animation-duration: 0.35s;
+          animation-duration: 0.35s;
+  -webkit-animation-fill-mode: both;
+          animation-fill-mode: both;
+}
+
+.card-enter {
+  -webkit-animation-name: bounceInDown;
+          animation-name: bounceInDown;
+}
+
+.card-leave.wrong {
+  z-index: -100;
+  -webkit-animation-duration: 0.5s;
+          animation-duration: 0.5s;
+  -webkit-animation-name: bounceOutLeft;
+          animation-name: bounceOutLeft;
+}
+
+.card-leave.right {
+  z-index: -100;
+  -webkit-animation-duration: 0.5s;
+          animation-duration: 0.5s;
+  -webkit-animation-name: bounceOutRight;
+          animation-name: bounceOutRight;
 }

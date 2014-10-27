@@ -1,5 +1,5 @@
 (ns thehat.core
-  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require
    [cljs.core.async :as async :refer [put! chan alts!]]
    [dommy.core :as dommy :refer-macros [sel1]]
@@ -13,8 +13,12 @@
 (enable-console-print!)
 
 (def config
-  {:round-duration 30
-   :max-score 42})
+  {
+   ;; :round-duration 30
+   :round-duration 10
+   ;; :max-score 42
+   :max-score 5
+   :team-names ["Blue" "Green"]})
 
 ;;
 ;; State
@@ -27,6 +31,7 @@
 (defonce current-team (atom 0))
 
 (defonce interaction-chan (chan))
+(defonce timer-stop-chan (chan))
 
 ;;
 ;; Utils
@@ -108,51 +113,79 @@
                         {:type :right-card
                          :team 1})}]]))
 
+(defn team [active? arrow-class score-class score]
+  (let [offset (str (- (* 95 (/ score (:max-score config))) 95) "%")
+        translation (str "translateX(" offset ")")]
+    [:div.team {:class (when-not active? "inactive")}
+     [:div.arrow {:class arrow-class}
+     [:span.icon-arrow-right]]
+    [:div.score {:class score-class
+                 :style {:transform translation}}
+     [:span.label score]]]))
+
+(defn teams []
+  (let [[score-0 score-1] @current-scores
+        active-team @current-team]
+    [:div.teams
+     [team (= active-team 0) :arrow-0 :score-0 score-0]
+     [team (= active-team 1) :arrow-1 :score-1 score-1]]))
+
 (defn round []
   (let [time @current-time
         deck @current-deck
-        progress-width (str (* 100 (/ time (:round-duration config))) "%")
-        word (first (:words deck))
-        ]
+        progress-width (str (- 100 (* 100 (/ time (:round-duration config))))
+                            "%")
+        progress-translation (str "translateX(-" progress-width ")")
+        word (first (:words deck))]
     [:div.game
      [:div.time
       (if (pos? time)
         [:div.progress.active
-         {:style {:width progress-width}}
-         (int time)]
+         {:style {:transform progress-translation}}
+         [:span.label (int time)]]
         nbsp)]
      [:div#rotated-card.card-inner.card-rotated
       {:style {:background-image (:background-url deck)}}
       nbsp]
-     ;; FIXME(Dmitry): add animation through React's mechanism
-     ;; NOTE(Dmitry): this metadata helps React to infer that the whole
-     ;;               subtree should be rerendered
-     ^{:key word}
-     [:div#current-card.card-inner.animated.bounceInLeft
-      [:div.word word
-       [:div.buttons
-        (if (pos? time)
-          [round-buttons-one]
-          [round-buttons-both])]]]
-     [:div.teams
-      [:div.team
-       [:div.arrow.a1 [:span.icon-arrow-right]]
-       [:div.team1
-        {:style {:width (str
-                         (->> 0.5 #_(/ score default-max-score)
-                              (* 85)
-                              (+ 5))
-                         "%")}}
-        42]]
-
-
-      ]]))
+     [ctg {:transitionName "card"}
+      ;; NOTE(Dmitry): this metadata helps React to infer that the whole
+      ;;               subtree should be rerendered
+      ^{:key word}
+      [:div#current-card.card-inner.keyframe-animated
+       [:div.word word
+        [:div.buttons
+         (if (pos? time)
+           [round-buttons-one]
+           [round-buttons-both])]]]]
+     [teams]]))
 
 (defn interlude []
-  [:div "interlude"])
+  [:div
+   [:div.finished {:on-click #(put! interaction-chan
+                                    {:type :interlude-click})}
+    [:div.big [:span.icon-flag]
+     [:div "Round finished!"]
+     [:div.small
+      [:span.mobile "Tap"]
+      [:span.desktop "Click"]
+      " anywhere and give another team a chance"]]]])
 
 (defn final []
-  [:div "final"])
+  (let [scores @current-scores
+        winner (if (> (first scores) (second scores)) 0 1)
+        winner-name (get (:team-names config) winner)
+        winner-class (str "winner-team-" winner)]
+    [:div
+     [:div.finished {:on-click #(put! interaction-chan
+                                      {:type :final-click})}
+      [:div.big [:span.icon-flag]
+       [:div
+        [:span {:class winner-class} winner-name]
+        " team won!"]
+       [:div.small
+        [:span.mobile "Tap"]
+        [:span.desktop "Click"]
+        " anywhere to start new game"]]]]))
 
 (def screens
   {:deck-chooser deck-chooser
@@ -186,20 +219,57 @@
     (dommy/add-class! el "bounce")
     (listen-animation-end! el animation-end-handler)))
 
+(defn start-ticker []
+  (go-loop [time (:round-duration config)]
+    ;; FIXME(Dmitry): it can be done better to account for time drift
+    ;;                (timeout based on actual time)
+    (let [to (async/timeout 1000)
+          [_ ch] (alts! [timer-stop-chan to])
+          new-time (dec time)]
+      (when (= ch to)
+        (if (pos? new-time)
+          (do (reset! current-time new-time)
+              (recur new-time))
+          (reset! current-screen :interlude))))))
+
 (defmethod interaction [:prelude :prelude-click]
   [_]
+  (reset! current-team (if (> (js/Math.random) 0.5) 0 1))
+  (reset! current-scores [0 0])
   (reset! current-time (:round-duration config))
-  (reset! current-screen :round))
+  (reset! current-screen :round)
+  (start-ticker))
 
 (defmethod interaction [:round :wrong-card]
   [{:keys [team]}]
+  (dommy/add-class! (sel1 :#current-card) :wrong)
   (swap! current-scores update-in [team] #(if (pos? %) (dec %) %))
-  (swap! current-deck update-in [:words] rest))
+  (if (pos? @current-time)
+    (swap! current-deck update-in [:words] rest)
+    (reset! current-screen :interlude)))
 
 (defmethod interaction [:round :right-card]
   [{:keys [team]}]
-  (swap! current-scores update-in [team] inc)
-  (swap! current-deck update-in [:words] rest))
+  (dommy/add-class! (sel1 :#current-card) :right)
+  (let [scores (swap! current-scores update-in [team] inc)]
+    (if (or (>= (get scores team) (:max-score config))
+            (<= (count (:words @current-deck)) 0))
+      (reset! current-screen :final)
+      (if (pos? @current-time)
+        (swap! current-deck update-in [:words] rest)
+        (reset! current-screen :interlude)))))
+
+(defmethod interaction [:interlude :interlude-click]
+  [{:keys [team]}]
+  (swap! current-team #(- 1 %))
+  (swap! current-deck update-in [:words] rest)
+  (reset! current-time (:round-duration config))
+  (reset! current-screen :round)
+  (start-ticker))
+
+(defmethod interaction [:final :final-click]
+  [_]
+  (reset! current-screen :deck-chooser))
 
 (defmethod interaction :default
   [arg]
