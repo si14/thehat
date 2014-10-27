@@ -111,7 +111,7 @@
 (defn round []
   (let [time @current-time
         deck @current-deck
-        progress-width (str (* 100 (/ time round-duration)) "%")
+        progress-width (str (* 100 (/ time (:round-duration config))) "%")
         word (first (:words deck))
         ]
     [:div.game
