@@ -195,7 +195,10 @@
    :final final})
 
 (defn root []
-  [ctg {:transitionName "screen"}
+  (let [screen @current-screen]
+     ^{:key screen}
+     [(p/safe-get screens @current-screen)])
+  #_[ctg {:transitionName "screen"}
    (let [screen @current-screen]
      ^{:key screen}
      [(p/safe-get screens @current-screen)])])
@@ -226,11 +229,10 @@
     (let [to (async/timeout 1000)
           [_ ch] (alts! [timer-stop-chan to])
           new-time (dec time)]
-      (when (= ch to)
-        (if (pos? new-time)
-          (do (reset! current-time new-time)
-              (recur new-time))
-          (reset! current-screen :interlude))))))
+      (when (and (= ch to)
+                 (>= new-time 0))
+        (do (reset! current-time new-time)
+            (recur new-time))))))
 
 (defmethod interaction [:prelude :prelude-click]
   [_]

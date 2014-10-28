@@ -358,11 +358,10 @@ body.landscape .game .word .buttons {
   margin-right: 4px;
 }
 
-
 .game .time .progress {
   width: 100%;
   background-color: #66c2a5;
-  transition: transform 0.25s;
+  transition: transform 1s;
   transition-timing-function: linear;
 }
 
