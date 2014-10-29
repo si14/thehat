@@ -358,13 +358,6 @@ body.landscape .game .word .buttons {
   margin-right: 4px;
 }
 
-.game .time .progress {
-  width: 100%;
-  background-color: #66c2a5;
-  transition: transform 1s;
-  transition-timing-function: linear;
-}
-
 .game .teams .team {
   clear: both;
 }
@@ -403,14 +396,6 @@ body.landscape .game .word .buttons {
 
 .game .teams .team .arrow.arrow-1, .game .word .buttons .bt-right-team-1 {
   background-color: #98c44d;
-}
-
-.game .teams .team.inactive .arrow.arrow-0 {
-  background-color: #8da0cb;
-}
-
-.game .teams .team.inactive .arrow.arrow-1 {
-  background-color: #a6d854;
 }
 
 .game .teams .team .score-0 {
@@ -548,7 +533,7 @@ FIXME(Dmitry): remove/trim animate.css
 */
 
 body {
-  /* NOTE(Dmitry): helps with flashing scroll on card animation */
+  /* NOTE(Dmitry): this helps with flashing scroll on card animation */
   overflow: hidden;
   user-select: none;
   -moz-user-select: none;
@@ -563,7 +548,7 @@ body {
           animation-fill-mode: both;
 }
 
-@-webkit-keyframes dropIn {
+@-webkit-keyframes dropInDown {
   0% {
     opacity: 0;
     -webkit-transform: translate3d(0, -3000px, 0);
@@ -573,7 +558,7 @@ body {
   }
 }
 
-@keyframes dropIn {
+@keyframes dropInDown {
   0% {
     opacity: 0;
     transform: translate3d(0, -3000px, 0);
@@ -624,18 +609,20 @@ body {
 }
 
 .card-enter {
-  -webkit-transition-timing-function: easeOut;
-  transition-timing-function: easeOut;
-  -webkit-animation-name: dropIn;
-          animation-name: dropIn;
+  -webkit-animation-timing-function: easeOut;
+          animation-timing-function: easeOut;
+  -webkit-animation-duration: 0.25s;
+          animation-duration: 0.25s;
+  -webkit-animation-name: dropInDown;
+          animation-name: dropInDown;
 }
 
 .card-leave.wrong {
   z-index: -50;
-  -webkit-transition-timing-function: easeIn;
-  transition-timing-function: easeIn;
-  -webkit-animation-duration: 0.3s;
-          animation-duration: 0.3s;
+  -webkit-animation-timing-function: easeIn;
+          animation-timing-function: easeIn;
+  -webkit-animation-duration: 0.25s;
+          animation-duration: 0.25s;
   -webkit-animation-name: goAwayLeft;
           animation-name: goAwayLeft;
 }
@@ -648,4 +635,45 @@ body {
           animation-duration: 0.3s;
   -webkit-animation-name: goAwayRight;
           animation-name: goAwayRight;
+}
+
+@-webkit-keyframes progressRunDown {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+    background-color: #66c2a5;
+  }
+  67% {
+    -webkit-transform: translate3d(-67%, 0, 0);
+    background-color: #66c2a5;
+  }
+  100% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    background-color: #fc662d;
+  }
+}
+
+@keyframes progressRunDown {
+  0% {
+    transform: translate3d(0, 0, 0);
+    background-color: #66c2a5;
+  }
+  67% {
+    transform: translate3d(-67%, 0, 0);
+    background-color: #66c2a5;
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+    background-color: #fc662d;
+  }
+}
+
+.game .time .progress {
+  width: 100%;
+  transition: none;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-name: progressRunDown;
+  animation-name: progressRunDown;
 }

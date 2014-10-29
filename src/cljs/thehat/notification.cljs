@@ -1,7 +1,7 @@
 (ns thehat.notification
   (:require
    [figwheel.client :as fw :include-macros true]
-   [dommy.core :as dommy :refer-macros [node sel sel1]]))
+   [dommy.core :as dommy :refer-macros [sel sel1]]))
 
 (enable-console-print!)
 
@@ -34,12 +34,12 @@
 (defonce ctx (create-context))
 
 (def osc-atom (atom nil))
+(def gain-atom (atom nil))
 
 (defn make-sound [overall-length]
   (let [dest (.-destination ctx)
         osc1 (.createOscillator ctx)
         gain1 (.createGain ctx)
-        gain2 (.createGain ctx)
 
         attack 15
         plateau 150
@@ -52,12 +52,13 @@
         stop-time (+ current-time (/ overall-length 1000))]
 
     (reset! osc-atom osc1)
+    (reset! gain-atom gain1)
 
     (.connect gain1 dest)
     (.setValueAtTime (-> gain1 .-gain) 0 0)
 
     (loop [pulse-ramp-up-start current-time
-           pause 1.25]
+           pause 2.5]
       (.setValueAtTime (-> gain1 .-gain) 0 pulse-ramp-up-start)
       (if (<= (+ pulse-ramp-up-start
                  (/ pulse-length 1000)
@@ -81,7 +82,8 @@
     (set! (.-type osc1) "sine")
     (.connect osc1 gain1)
     (.start osc1 current-time)
-    (.stop osc1 (+ stop-time (/ final-pulse-length 1000)
+    (.stop osc1 (+ stop-time
+                   (/ final-pulse-length 1000)
                    (/ decay 1000)))))
 
 (defn vibrate [length]
@@ -90,17 +92,22 @@
      (.-webkitVibrate js/navigator) (.webkitVibrate js/navigator 1000)
      (.-mozVibrate js/navigator) (.mozVibrate js/navigator 1000)))
 
-(defn start-notifying []
-  (let [overall-length 5000]
+(defn start
+  "Takes round length in seconds and percent at which
+   notification should start"
+  [round-length warning-percent]
+  (let [round-length-msec (* 1000 round-length)]
     (when ctx
-      (make-sound overall-length))
-    ;; FIXME(Dmitry): hack for avoiding vibration if notification is cancelled
-    (js/setTimeout #(when @osc-atom (vibrate 1000)) overall-length)))
+      (js/setTimeout #(make-sound (* round-length-msec (- 1 warning-percent)))
+                     (* round-length-msec warning-percent)))
+    ;; NOTE(Dmitry): hack for avoiding vibration if notification is cancelled
+    (js/setTimeout #(when @osc-atom (vibrate 1000)) round-length-msec)))
 
-(defn stop-notifying []
-  #_(when @osc-atom
-    ;; FIXME(Dmitry): this causes a click
-    (.stop @osc-atom 0)
+(defn stop []
+  (when @osc-atom
+    (let [current-time (.-currentTime ctx)]
+      (.linearRampToValueAtTime (-> @gain-atom .-gain) 0 (+ current-time 0.1))
+      (.stop @osc-atom (+ current-time 0.1)))
     (reset! osc-atom nil)))
 
 (defn unlock-notification []
