@@ -14,10 +14,10 @@
 
 (def config
   {
-   :round-duration 30
-   ;; :round-duration 10
-   :max-score 24
-   ;; :max-score 5
+   ;; :round-duration 30
+   :round-duration 10
+   ;; :max-score 24
+   :max-score 5
    :sound-warning-percent 0.67 ;; should be in sync with progressRunDown in CSS
    :team-names ["Blue" "Green"]})
 
@@ -46,7 +46,7 @@
     (for [{:keys [name id words-count background-url]} decks]
       ^{:key id} ;; react's key to improve rendering perf
       [:div {:id (str "deck_" id)
-             :class "pack animated flipInX"
+             :class "pack"
              :on-click #(put! interaction-chan
                               {:type :deck-click
                                :deck-id id})}
@@ -58,17 +58,19 @@
 (defn prelude []
   [:div.finished {:on-click #(put! interaction-chan
                                    {:type :prelude-click})}
-   [:div.big [:span.icon-flag]
-    [:div "Ready to start!"]
-    [:div.small
-     [:span.mobile "Tap"]
-     [:span.desktop "Click"]
-     " anywhere to start the game"]]])
+   [:div.big [:span.icon-flag]]
+   [:div "Ready to start!"]
+   [:div.small
+    [:span.mobile "Tap"]
+    [:span.desktop "Click"]
+    " anywhere to start the game"]])
 
 (defn round-buttons [both?]
   (let [team @current-team]
     [:div.buttons
-     [:div.small nbsp]
+     (if both?
+       [:div.small "Both teams can guess now"]
+       [:div.small nbsp])
      [:span.icon.icon-cancel-2.bt-wrong
       {:on-click #(put! interaction-chan
                         {:type :wrong-card
@@ -97,13 +99,14 @@
                            :team team})}])]))
 
 (defn team [active? arrow-class score-class score]
-  (let [offset (str (- (* 95 (/ score (:max-score config))) 95) "%")
+  (let [offset (str (- (* 93 (/ score (:max-score config))) 93) "%")
         translation (str "translate3d(" offset ",0,0)")]
     [:div.team {:class (when-not active? "inactive")}
      [:div.arrow {:class arrow-class}
      [:span.icon-arrow-right]]
     [:div.score {:class score-class
-                 :style {:transform translation}}
+                 :style {:-webkit-transform translation
+                         :transform translation}}
      [:span.label score]]]))
 
 (defn teams []
@@ -113,26 +116,35 @@
      [team (= active-team 0) :arrow-0 :score-0 score-0]
      [team (= active-team 1) :arrow-1 :score-1 score-1]]))
 
-(defn round-plain []
+(defn progress-plain [round-n]
+  (let [time @current-time-left]
+    [:div.time
+     (if (pos? time)
+       [:div.progress.active
+        {:style
+         {:-webkit-animation-duration (str (:round-duration config) "s")
+          :animation-duration (str (:round-duration config) "s")}}
+        [:span.label (int time)]]
+       nbsp)]))
+
+(def progress
+  (with-meta progress-plain
+    ;; FIXME(Dmitry): move notification/start to ticker
+    {:component-did-mount
+     (fn [_] (notification/start
+              (:round-duration config)
+              (:sound-warning-percent config)))
+     :component-will-unmount
+     (fn [_] (notification/stop))}))
+
+(defn round []
   (let [time @current-time-left
         deck @current-deck
         round-n @current-round
-        progress-width (str (- 100 (* 100 (/ time (:round-duration config))))
-                            "%")
-        progress-translation (str "translate3d(-" progress-width ",0,0)")
         word (first (:words deck))]
     [:div.game
      ;; NOTE(Dmitry): prevent reuse of this DOM element between rounds
-     ^{:key round-n}
-     [:div.time
-      (if (pos? time)
-        [:div.progress.active
-         {:style #_{:transform progress-translation}
-          {:-webkit-animation-duration (str (:round-duration config) "s")
-           :animation-duration (str (:round-duration config) "s")}
-          }
-         [:span.label (int time)]]
-        nbsp)]
+     [progress round-n]
      [:div#rotated-card.card-inner.card-rotated
       {:style {:background-image (:background-url deck)}}
       nbsp]
@@ -142,27 +154,19 @@
       ^{:key word}
       [:div#current-card.card-inner.keyframe-animated
        [:div.word word
-        [:div.buttons
-         [round-buttons (not (pos? time))]]]]]
+        [round-buttons (not (pos? time))]]]]
      [teams]]))
-
-(def round
-  (with-meta round-plain
-    {:component-did-mount (fn [_] (notification/start
-                                   (:round-duration config)
-                                   (:sound-warning-percent config)))
-     :component-will-unmount (fn [_] (notification/stop))}))
 
 (defn interlude []
   [:div
    [:div.finished {:on-click #(put! interaction-chan
                                     {:type :interlude-click})}
-    [:div.big [:span.icon-flag]
-     [:div "Round finished!"]
-     [:div.small
-      [:span.mobile "Tap"]
-      [:span.desktop "Click"]
-      " anywhere and give another team a chance"]]]])
+    [:div.big [:span.icon-flag]]
+    [:div "Round finished!"]
+    [:div.small
+     [:span.mobile "Tap"]
+     [:span.desktop "Click"]
+     " anywhere and give another team a chance"]]])
 
 (defn final []
   (let [scores @current-scores
@@ -172,14 +176,14 @@
     [:div
      [:div.finished {:on-click #(put! interaction-chan
                                       {:type :final-click})}
-      [:div.big [:span.icon-flag]
-       [:div
-        [:span {:class winner-class} winner-name]
-        " team won!"]
-       [:div.small
-        [:span.mobile "Tap"]
-        [:span.desktop "Click"]
-        " anywhere to start new game"]]]]))
+      [:div.big [:span.icon-flag]]
+      [:div
+       [:span {:class winner-class} winner-name]
+       " team won!"]
+      [:div.small
+       [:span.mobile "Tap"]
+       [:span.desktop "Click"]
+       " anywhere to start new game"]]]))
 
 (def screens
   {:deck-chooser deck-chooser
@@ -227,7 +231,6 @@
   (reset! current-time-left (:round-duration config))
   (reset! current-round 0)
   (reset! current-screen :round)
-  #_(notification/start (:round-duration config))
   (start-ticker))
 
 (defmethod interaction [:round :wrong-card]

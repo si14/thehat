@@ -5,7 +5,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2371"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [reagent "0.4.2"]
+                 [reagent "0.4.3"]
                  [prismatic/schema "0.3.1"]
                  [prismatic/dommy "1.0.0"]
                  [prismatic/plumbing "0.3.5"]
@@ -38,9 +38,8 @@
                                     ;; "public/js/facebook.js"
                                     "public/js/twitter.js"
                                     ;; "public/js/googleplus.js"
-                                    "react/react_with_addons.min.js"]
-                         :externs ["externs.js"
-                                   "react/externs/react_with_addons.js"]}}]}
+                                    "react/react-with-addons-0.11.2.min.js"]
+                         :externs ["externs.js"]}}]}
 
   :minify-assets {:assets {"resources/public/thehat.css"
                            "resources/public/css/"}}

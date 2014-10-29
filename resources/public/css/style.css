@@ -350,7 +350,9 @@ body.landscape .game .word .buttons {
   color: white;
   text-align: right;
   font-size: 13px;
+  -webkit-transition: -webkit-transform 0.25s;
   transition: transform 0.25s;
+  -webkit-transition-timing-function: ease;
   transition-timing-function: ease;
 }
 
@@ -360,6 +362,7 @@ body.landscape .game .word .buttons {
 
 .game .teams .team {
   clear: both;
+  overflow: hidden;
 }
 
 .game .teams .team.inactive .arrow .icon-arrow-right {
@@ -367,7 +370,7 @@ body.landscape .game .word .buttons {
 }
 
 .game .teams .team .arrow {
-  width: 5%;
+  width: 7%;
   float: left;
   font-size: 10px;
   padding-top: 4px;
@@ -416,6 +419,7 @@ body.landscape .game .word .buttons {
 
 .game .time {
   height: 20px;
+  overflow: hidden;
 }
 
 @media (max-width: 750px) {
@@ -455,18 +459,20 @@ body.landscape .game .word .buttons {
   .game {
     left: 50%;
     top: 20%;
+    height: 460px;
     position: absolute;
   }
 
   .game .card-inner {
     width: 500px;
-    height: 100%;
     margin-left: -250px;
     height: 300px;
     text-align: center;
     max-width: 500px;
     max-height: 500px;
     z-index: 100;
+    position: absolute;
+    top: 70px;
   }
 
   .game .card-rotated {
@@ -483,11 +489,13 @@ body.landscape .game .word .buttons {
     margin-left: -250px;
     text-align: center;
     max-width: 500px;
+    position: absolute;
   }
 
   .game .teams {
     margin-top: 50px;
     margin-bottom: 0px;
+    bottom: 0px;
   }
 
   .card-placeholder {
@@ -501,12 +509,12 @@ body.landscape .game .word .buttons {
 .finished {
   cursor: pointer;
   position: absolute;
-  top: 50%;
-  margin-top: -200px;
+  top: 10%;
+/*  margin-top: 3em;*/
   width: 80%;
   margin-left: 10%;
   margin-right: 10%;
-  height: 200px;
+  height: 100%;
   font-size: 32px;
 }
 
@@ -621,8 +629,8 @@ body {
   z-index: -50;
   -webkit-animation-timing-function: easeIn;
           animation-timing-function: easeIn;
-  -webkit-animation-duration: 0.25s;
-          animation-duration: 0.25s;
+  -webkit-animation-duration: 0.5s;
+          animation-duration: 0.5s;
   -webkit-animation-name: goAwayLeft;
           animation-name: goAwayLeft;
 }
@@ -631,8 +639,8 @@ body {
   z-index: -50;
   -webkit-transition-timing-function: easeIn;
   transition-timing-function: easeIn;
-  -webkit-animation-duration: 0.3s;
-          animation-duration: 0.3s;
+  -webkit-animation-duration: 0.5s;
+          animation-duration: 0.5s;
   -webkit-animation-name: goAwayRight;
           animation-name: goAwayRight;
 }

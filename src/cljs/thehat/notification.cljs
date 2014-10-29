@@ -98,6 +98,7 @@
   [round-length warning-percent]
   (let [round-length-msec (* 1000 round-length)]
     (when ctx
+      ;; FIXME(Dmitry): setTimeout can be inprecise
       (js/setTimeout #(make-sound (* round-length-msec (- 1 warning-percent)))
                      (* round-length-msec warning-percent)))
     ;; NOTE(Dmitry): hack for avoiding vibration if notification is cancelled
