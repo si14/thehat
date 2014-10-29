@@ -517,7 +517,7 @@ body.landscape .game .word .buttons {
   cursor: pointer;
   position: absolute;
   top: 50%;
-  margin-top: -100px;
+  margin-top: -200px;
   width: 80%;
   margin-left: 10%;
   margin-right: 10%;
@@ -556,9 +556,10 @@ body {
   -webkit-touch-callout: none;
 }
 
-
 .screen-enter {
-  opacity: 0.01;
+  opacity: 0;
+  /* NOTE(Dmitry): fixes bug with disappearing div in Chrome */
+  -webkit-transform: translateZ(0);
   transition: opacity .15s ease-in;
 }
 
@@ -568,11 +569,13 @@ body {
 
 .screen-leave {
   opacity: 1;
+  /* NOTE(Dmitry): fixes bug with disappearing div in Chrome */
+  -webkit-transform: translateZ(0);
   transition: opacity .15s ease-in;
 }
 
 .screen-leave.screen-leave-active {
-  opacity: 0.01;
+  opacity: 0;
 }
 
 .keyframe-animated {
@@ -582,23 +585,89 @@ body {
           animation-fill-mode: both;
 }
 
+@-webkit-keyframes dropIn {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -3000px, 0);
+  }
+  100% {
+    -webkit-transform: none;
+  }
+}
+
+@keyframes dropIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -3000px, 0);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@-webkit-keyframes goAwayLeft {
+  0% {
+    -webkit-transform: none;
+  }
+  100% {
+    -webkit-transform: translate3d(-3000px, 0, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes goAwayLeft {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: translate3d(-3000px, 0, 0);
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes goAwayRight {
+  0% {
+    -webkit-transform: none;
+  }
+  100% {
+    -webkit-transform: translate3d(3000px, 0, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes goAwayRight {
+  0% {
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(3000px, 0, 0);
+  }
+}
+
 .card-enter {
-  -webkit-animation-name: bounceInDown;
-          animation-name: bounceInDown;
+  -webkit-transition-timing-function: easeOut;
+  transition-timing-function: easeOut;
+  -webkit-animation-name: dropIn;
+          animation-name: dropIn;
 }
 
 .card-leave.wrong {
-  z-index: -100;
-  -webkit-animation-duration: 0.5s;
-          animation-duration: 0.5s;
-  -webkit-animation-name: bounceOutLeft;
-          animation-name: bounceOutLeft;
+  z-index: -50;
+  -webkit-transition-timing-function: easeIn;
+  transition-timing-function: easeIn;
+  -webkit-animation-duration: 0.3s;
+          animation-duration: 0.3s;
+  -webkit-animation-name: goAwayLeft;
+          animation-name: goAwayLeft;
 }
 
 .card-leave.right {
-  z-index: -100;
-  -webkit-animation-duration: 0.5s;
-          animation-duration: 0.5s;
-  -webkit-animation-name: bounceOutRight;
-          animation-name: bounceOutRight;
+  z-index: -50;
+  -webkit-transition-timing-function: easeIn;
+  transition-timing-function: easeIn;
+  -webkit-animation-duration: 0.3s;
+          animation-duration: 0.3s;
+  -webkit-animation-name: goAwayRight;
+          animation-name: goAwayRight;
 }
