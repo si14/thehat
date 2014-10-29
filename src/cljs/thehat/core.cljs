@@ -67,15 +67,14 @@
          [:div.small words-count " words"]]]])]])
 
 (defn prelude []
-  [:div
-   [:div.finished {:on-click #(put! interaction-chan
-                                    {:type :prelude-click})}
-    [:div.big [:span.icon-flag]
-     [:div "Ready to start!"]
-     [:div.small
-      [:span.mobile "Tap"]
-      [:span.desktop "Click"]
-      " anywhere to start the game"]]]])
+  [:div.finished {:on-click #(put! interaction-chan
+                                   {:type :prelude-click})}
+   [:div.big [:span.icon-flag]
+    [:div "Ready to start!"]
+    [:div.small
+     [:span.mobile "Tap"]
+     [:span.desktop "Click"]
+     " anywhere to start the game"]]])
 
 (defn round-buttons-one []
   (let [team @current-team]
@@ -115,7 +114,7 @@
 
 (defn team [active? arrow-class score-class score]
   (let [offset (str (- (* 95 (/ score (:max-score config))) 95) "%")
-        translation (str "translateX(" offset ")")]
+        translation (str "translate3d(" offset ",0,0)")]
     [:div.team {:class (when-not active? "inactive")}
      [:div.arrow {:class arrow-class}
      [:span.icon-arrow-right]]
@@ -135,7 +134,7 @@
         deck @current-deck
         progress-width (str (- 100 (* 100 (/ time (:round-duration config))))
                             "%")
-        progress-translation (str "translateX(-" progress-width ")")
+        progress-translation (str "translate3d(-" progress-width ",0,0)")
         word (first (:words deck))]
     [:div.game
      [:div.time
@@ -194,14 +193,12 @@
    :interlude interlude
    :final final})
 
+
+
 (defn root []
   (let [screen @current-screen]
      ^{:key screen}
-     [(p/safe-get screens @current-screen)])
-  #_[ctg {:transitionName "screen"}
-   (let [screen @current-screen]
-     ^{:key screen}
-     [(p/safe-get screens @current-screen)])])
+     [(p/safe-get screens @current-screen)]))
 
 ;;
 ;; Interaction
@@ -219,8 +216,9 @@
           (reset! current-deck shuffled-deck)
           (reset! current-screen :prelude))]
     (dommy/remove-class! el "flipInX")
-    (dommy/add-class! el "bounce")
-    (listen-animation-end! el animation-end-handler)))
+    #_(dommy/add-class! el "bounce")
+    (animation-end-handler)
+    #_(listen-animation-end! el animation-end-handler)))
 
 (defn start-ticker []
   (go-loop [time (:round-duration config)]

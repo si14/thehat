@@ -548,34 +548,12 @@ FIXME(Dmitry): remove/trim animate.css
 */
 
 body {
-  /* helps with flashing scroll on card animation */
+  /* NOTE(Dmitry): helps with flashing scroll on card animation */
   overflow: hidden;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-}
-
-.screen-enter {
-  opacity: 0;
-  /* NOTE(Dmitry): fixes bug with disappearing div in Chrome */
-  -webkit-transform: translateZ(0);
-  transition: opacity .15s ease-in;
-}
-
-.screen-enter.screen-enter-active {
-  opacity: 1;
-}
-
-.screen-leave {
-  opacity: 1;
-  /* NOTE(Dmitry): fixes bug with disappearing div in Chrome */
-  -webkit-transform: translateZ(0);
-  transition: opacity .15s ease-in;
-}
-
-.screen-leave.screen-leave-active {
-  opacity: 0;
 }
 
 .keyframe-animated {
