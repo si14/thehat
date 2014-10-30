@@ -5,8 +5,11 @@
     - name: copy resources
       local_action: command rsync -r ../resources root@{{ansible_ssh_host}}:/opt/thehat/
 
-    - name: bust caches for game
-      script: cache_busting.py /opt/thehat/resources/public/game.html /opt/thehat/resources/public/thehat.css /opt/thehat/resources/public/thehat.js
+    - name: bust caches for en game
+      script: cache_busting.py /opt/thehat/resources/public/game_en.html /opt/thehat/resources/public/thehat.css /opt/thehat/resources/public/thehat_en.js
+
+    - name: bust caches for ru game
+      script: cache_busting.py /opt/thehat/resources/public/game_ru.html /opt/thehat/resources/public/thehat.css /opt/thehat/resources/public/thehat_ru.js
 
     - name: bust caches for index
       script: cache_busting.py /opt/thehat/resources/public/index.html /opt/thehat/resources/public/thehat.css
@@ -16,7 +19,3 @@
 
     - name: gzip everything
       script: gzip.sh
-
-  handlers:
-    - name: restart app
-      service: name=thehat state=restarted

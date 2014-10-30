@@ -3,18 +3,18 @@ CACHE MANIFEST
 CACHE:
 
 /thehat.css
-http://fonts.googleapis.com/css?family=PT+Sans&subset=latin,cyrillic
-http://fonts.googleapis.com/css?family=PT+Sans+Caption&subset=latin,cyrillic
+http://fonts.googleapis.com/css?family=PT+Sans&subset=cyrillic
+http://fonts.googleapis.com/css?family=PT+Sans+Caption&subset=cyrillic
 
 /fonts/iconFont.eot
 /fonts/iconFont.svg
 /fonts/iconFont.ttf
 /fonts/iconFont.woff
 
-/thehat.js
+/thehat_ru.js
 
 /
-/game.html
+/game_ru.html
 
 NETWORK:
 *
