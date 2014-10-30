@@ -1,5 +1,7 @@
 (ns thehat.core
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
+  (:require-macros
+   [cljs.core.async.macros :refer [go go-loop]]
+   [thehat.translation :refer [translate]])
   (:require
    [cljs.core.async :as async :refer [put! chan alts!]]
    [dommy.core :as dommy :refer-macros [sel1]]
@@ -19,7 +21,9 @@
    ;; :max-score 24
    :max-score 5
    :sound-warning-percent 0.67 ;; should be in sync with progressRunDown in CSS
-   :team-names ["Blue" "Green"]})
+   :team-names (translate
+                :en ["Blue" "Green"]
+                :ru ["Синяя" "Зелёная"])})
 
 ;;
 ;; State
@@ -33,7 +37,7 @@
 (defonce current-round (atom 0))
 
 (defonce interaction-chan (chan))
-(defonce timer-stop-chan (chan))
+(defonce ticker-stop-chan (chan))
 
 ;;
 ;; Components
@@ -42,7 +46,9 @@
 (defn deck-chooser []
   [:div.chooser
    [:div.chooser-inner
-    [:div.title "Choose a deck:"]
+    [:div.title (translate
+                 :en "Choose a deck:"
+                 :ru "Выберите колоду:")]
     (for [{:keys [name id words-count background-url]} decks]
       ^{:key id} ;; react's key to improve rendering perf
       [:div {:id (str "deck_" id)
@@ -59,17 +65,23 @@
   [:div.finished {:on-click #(put! interaction-chan
                                    {:type :prelude-click})}
    [:div.big [:span.icon-flag]]
-   [:div "Ready to start!"]
+   [:div (translate
+          :en "Ready to start!"
+          :ru "Всё готово!")]
    [:div.small
-    [:span.mobile "Tap"]
-    [:span.desktop "Click"]
-    " anywhere to start the game"]])
+    [:span.mobile (translate :en "Tap" :ru "Нажмите")]
+    [:span.desktop (translate :en "Click" :ru "Нажмите")]
+    (translate
+     :en " anywhere to start the game"
+     :ru ", чтобы начать игру")]])
 
 (defn round-buttons [both?]
   (let [team @current-team]
     [:div.buttons
      (if both?
-       [:div.small "Both teams can guess now"]
+       [:div.small (translate
+                    :en "Both teams can guess now"
+                    :ru "Угадывают обе команды")]
        [:div.small nbsp])
      [:span.icon.icon-cancel-2.bt-wrong
       {:on-click #(put! interaction-chan
@@ -130,12 +142,10 @@
 (def progress
   (with-meta progress-plain
     ;; FIXME(Dmitry): move notification/start to ticker
-    {:component-did-mount
-     (fn [_] (notification/start
-              (:round-duration config)
-              (:sound-warning-percent config)))
-     :component-will-unmount
-     (fn [_] (notification/stop))}))
+    {:component-will-unmount
+     (fn [_]
+       (put! ticker-stop-chan :stop)
+       (notification/stop))}))
 
 (defn round []
   (let [time @current-time-left
@@ -162,11 +172,15 @@
    [:div.finished {:on-click #(put! interaction-chan
                                     {:type :interlude-click})}
     [:div.big [:span.icon-flag]]
-    [:div "Round finished!"]
+    [:div (translate
+           :en "Round finished!"
+           :ru "Раунд завершён!")]
     [:div.small
-     [:span.mobile "Tap"]
-     [:span.desktop "Click"]
-     " anywhere and give another team a chance"]]])
+     [:span.mobile (translate :en "Tap" :ru "Нажмите")]
+     [:span.desktop (translate :en "Click" :ru "Нажмите")]
+     (translate
+      :en " anywhere and give another team a chance"
+      :ru " и дайте шанс другой команде")]]])
 
 (defn final []
   (let [scores @current-scores
@@ -179,11 +193,15 @@
       [:div.big [:span.icon-flag]]
       [:div
        [:span {:class winner-class} winner-name]
-       " team won!"]
+       (translate
+        :en " team won!"
+        :ru " команда выиграла!")]
       [:div.small
-       [:span.mobile "Tap"]
-       [:span.desktop "Click"]
-       " anywhere to start new game"]]]))
+       [:span.mobile (translate :en "Tap" :ru "Нажмите")]
+       [:span.desktop (translate :en "Click" :ru "Нажмите")]
+       (translate
+        :en " anywhere to start new game"
+        :ru ", чтобы начать новую игру")]]]))
 
 (def screens
   {:deck-chooser deck-chooser
@@ -195,7 +213,7 @@
 (defn root []
   (let [screen @current-screen]
      ^{:key screen}
-     [(p/safe-get screens @current-screen)]))
+     [(p/safe-get screens screen)]))
 
 ;;
 ;; Interaction
@@ -211,6 +229,9 @@
     (reset! current-screen :prelude)))
 
 (defn start-ticker []
+  (notification/start (:round-duration config)
+                      (:sound-warning-percent config))
+
   (let [max-time (:round-duration config)
         start-ts (js/Date.now)]
     (go-loop [time 0]
@@ -218,7 +239,7 @@
             to-sleep (- (+ start-ts (* 1000 new-time))
                         (js/Date.now))
             to (async/timeout (max to-sleep 0))
-            [_ ch] (alts! [timer-stop-chan to])]
+            [_ ch] (alts! [ticker-stop-chan to])]
         (when (and (= ch to)
                    (<= new-time max-time))
           (do (reset! current-time-left (- max-time new-time))
@@ -279,6 +300,6 @@
 ;;
 
 (defn ^:export run []
-  (when (notification/is-ios?)
+  (when (or true (notification/is-ios?))
     (notification/unlock-notification))
   (reagent/render-component [root] (sel1 :#app)))

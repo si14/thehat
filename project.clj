@@ -9,8 +9,9 @@
                  [prismatic/schema "0.3.1"]
                  [prismatic/dommy "1.0.0"]
                  [prismatic/plumbing "0.3.5"]
-                 [garden "1.2.5"] ;; ?
-                 ]
+                 ;; [garden "1.2.5"] ;; ?
+
+                 [environ "1.0.0"]]
 
   :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
             [lein-asset-minifier "0.2.0"]]
@@ -39,7 +40,8 @@
                                     "public/js/twitter.js"
                                     ;; "public/js/googleplus.js"
                                     "react/react-with-addons-0.11.2.min.js"]
-                         :externs ["externs.js"]}}]}
+                         :externs ["externs.js"
+                                   "audio_externs.js"]}}]}
 
   :minify-assets {:assets {"resources/public/thehat.css"
                            "resources/public/css/"}}

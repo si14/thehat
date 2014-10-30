@@ -5,27 +5,6 @@
 
 (enable-console-print!)
 
-;; ---
-
-;; var filter = audioContext.createBiquadFilter();
-;; filter.type = filter.LOWPASS;
-;; filter.frequency = 0;
-;; filter.Q = 0;
-
-;; // sweep the frequency from 0-5k; sweep the Q from 20 to 0.
-;; var now = audioContext.currentTime;
-;; filter.frequency.setValueAtTime( 0, now );
-;; filter.frequency.linearRampToValueAtTime( 2000.0, now + 2.0 );
-;; filter.frequency.linearRampToValueAtTime( 0.0, now + 4.0 );
-
-;; filter.Q.setValueAtTime( 20.0, now );
-;; filter.Q.linearRampToValueAtTime( 10.0, now + 4 );
-
-;;; ---
-
-;; var wavetable = audioContext.createWaveTable( Float32Array real, Float32Array imag );
-;; oscillator.setWaveTable( wavetable );
-
 (defn create-context []
   (when-let [constructor (or js/window.AudioContext
                              js/window.webkitAudioContext)]
@@ -33,6 +12,8 @@
 
 (defonce ctx (create-context))
 
+(def sound-timeout (atom nil))
+(def vibration-timeout (atom nil))
 (def osc-atom (atom nil))
 (def gain-atom (atom nil))
 
@@ -96,15 +77,26 @@
   "Takes round length in seconds and percent at which
    notification should start"
   [round-length warning-percent]
-  (let [round-length-msec (* 1000 round-length)]
+  (let [round-length-msec (* 1000 round-length)
+        target-time (+ (js/Date.now) round-length-msec)
+        make-sound-callback (fn []
+                              (let [duration (- target-time (js/Date.now))]
+                                (when (> duration 100)
+                                  (make-sound duration))))]
     (when ctx
-      ;; FIXME(Dmitry): setTimeout can be inprecise
-      (js/setTimeout #(make-sound (* round-length-msec (- 1 warning-percent)))
-                     (* round-length-msec warning-percent)))
-    ;; NOTE(Dmitry): hack for avoiding vibration if notification is cancelled
-    (js/setTimeout #(when @osc-atom (vibrate 1000)) round-length-msec)))
+      (reset! sound-timeout
+              (js/setTimeout make-sound-callback
+                             (* round-length-msec warning-percent))))
+    (reset! vibration-timeout
+            (js/setTimeout (partial vibrate 1000) round-length-msec))))
 
 (defn stop []
+  (when @sound-timeout
+    (js/clearTimeout @sound-timeout)
+    (reset! sound-timeout nil))
+  (when @vibration-timeout
+    (js/clearTimeout @vibration-timeout)
+    (reset! vibration-timeout nil))
   (when @osc-atom
     (let [current-time (.-currentTime ctx)]
       (.linearRampToValueAtTime (-> @gain-atom .-gain) 0 (+ current-time 0.1))
@@ -128,4 +120,4 @@
        (.stop osc (+ current-time 0.01))))))
 
 (defn is-ios? []
-  (re-find #"(iPad|iPhone|iPod)" js/navigator.userAgent))
+  (some? (re-find #"(iPad|iPhone|iPod)" js/navigator.userAgent)))
