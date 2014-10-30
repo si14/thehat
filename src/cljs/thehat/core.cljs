@@ -16,10 +16,10 @@
 
 (def config
   {
-   ;; :round-duration 30
-   :round-duration 10
-   ;; :max-score 24
-   :max-score 5
+   :round-duration 30
+   ;; :round-duration 10
+   :max-score 24
+   ;; :max-score 5
    :sound-warning-percent 0.67 ;; should be in sync with progressRunDown in CSS
    :team-names (translate
                 :en ["Blue" "Green"]
@@ -59,7 +59,7 @@
        [:div.inside.rotated "&nbsp;"]
        [:div.inside {:style {:background-image background-url}}
         [:div.word name
-         [:div.small words-count " words"]]]])]])
+         [:div.small words-count (translate :en " words" :ru " слов")]]]])]])
 
 (defn prelude []
   [:div.finished {:on-click #(put! interaction-chan
