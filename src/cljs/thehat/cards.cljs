@@ -25,8 +25,6 @@
            :ru
            [{:name "Случайные"
              :words (concat words-ru/common words-ru/war-and-peace)}
-            {:name "Частые"
-             :words words-ru/common}
             {:name "Война и Мир"
              :words words-ru/war-and-peace}]
            )]

@@ -3,7 +3,7 @@
    [environ.core :refer [env]]
    [plumbing.core :refer [safe-get]]))
 
-(def default-lang :ru)
+(def default-lang :en)
 
 (defn iae [arg]
   (throw (IllegalArgumentException. arg)))

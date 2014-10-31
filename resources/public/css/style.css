@@ -552,7 +552,7 @@ FIXME(Dmitry): clean up styles above
 FIXME(Dmitry): remove/trim animate.css
 */
 
-body {
+body.game-body {
   /* NOTE(Dmitry): this helps with flashing scroll on card animation */
   overflow: hidden;
   user-select: none;
